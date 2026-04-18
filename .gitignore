@@ -1,0 +1,76 @@
+# ---- secrets & env ----
+# Ignore all .env files except the committed example template.
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Local scratch file — may contain credentials.
+notas
+
+# ---- dependencies ----
+node_modules/
+jspm_packages/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+.yarn/cache/
+
+# ---- next.js / build output (root-anchored to avoid eating src/**/build/) ----
+/.next/
+/out/
+/build/
+/dist/
+next-env.d.ts
+*.tsbuildinfo
+
+# ---- deploy platforms ----
+.vercel/
+.netlify/
+
+# ---- supabase cli artifacts ----
+supabase/.temp/
+supabase/.branches/
+supabase/functions/.deno/
+supabase/.vscode/
+
+# ---- logs & debug ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ---- test / coverage ----
+coverage/
+*.lcov
+.nyc_output/
+
+# ---- macOS / OS ----
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+
+# ---- editors / IDE ----
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.history/
+
+# ---- misc caches ----
+.cache/
+.parcel-cache/
+.eslintcache
+.turbo/
+
+# ---- extracted design-package archives (binary, re-downloadable) ----
+design_package.gz
+design_package.bin
+design_package.tar.gz
