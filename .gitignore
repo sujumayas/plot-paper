@@ -74,3 +74,9 @@ Desktop.ini
 design_package.gz
 design_package.bin
 design_package.tar.gz
+
+# ---- test & render output ----
+/test-results/
+/playwright-report/
+/blob-report/
+/.render*/

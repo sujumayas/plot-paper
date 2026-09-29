@@ -1,0 +1,59 @@
+{
+  "id": "disaster-deaths-by-decade",
+  "chartType": "stacked",
+  "title": "Disasters once killed millions per decade; since the 1990s the toll is a fraction of that",
+  "subtitle": "Global deaths from natural disasters by type, thousands, per decade, 1900s–2010s",
+  "source": "EM-DAT (CRED/UCLouvain) via Our World in Data and vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/disasters.csv",
+  "note": "Early-century figures are dominated by a few catastrophic famines and floods in China, India and the Soviet Union. 'Other' includes extreme temperature, landslides, volcanic activity and wildfires. The 2010s cover 2010–2017 only.",
+  "description": "A century of disaster deaths shows how early warning, infrastructure and famine relief changed the toll.",
+  "tags": [
+    "disasters",
+    "history",
+    "global"
+  ],
+  "author": "tomas.v",
+  "columns": [
+    "decade",
+    "Drought",
+    "Flood",
+    "Epidemic",
+    "Earthquake",
+    "Storms",
+    "Other"
+  ],
+  "rows": [
+    {"decade":"1900s","Drought":1261,"Flood":1,"Epidemic":3000,"Earthquake":173,"Storms":18,"Other":45},
+    {"decade":"1910s","Drought":85,"Flood":101,"Epidemic":3010,"Earthquake":63,"Storms":60,"Other":8},
+    {"decade":"1920s","Drought":4724,"Flood":4,"Epidemic":3323,"Earthquake":549,"Storms":120,"Other":6},
+    {"decade":"1930s","Drought":0,"Flood":4361,"Epidemic":2,"Earthquake":238,"Storms":94,"Other":6},
+    {"decade":"1940s","Drought":3450,"Flood":101,"Epidemic":12,"Earthquake":162,"Storms":127,"Other":20},
+    {"decade":"1950s","Drought":0,"Flood":2062,"Epidemic":0,"Earthquake":21,"Storms":35,"Other":9},
+    {"decade":"1960s","Drought":1511,"Flood":32,"Epidemic":9,"Earthquake":52,"Storms":134,"Other":12},
+    {"decade":"1970s","Drought":119,"Flood":51,"Epidemic":10,"Earthquake":440,"Storms":357,"Other":10},
+    {"decade":"1980s","Drought":557,"Flood":52,"Epidemic":44,"Earthquake":60,"Storms":47,"Other":37},
+    {"decade":"1990s","Drought":3,"Flood":95,"Epidemic":94,"Earthquake":104,"Storms":211,"Other":20},
+    {"decade":"2000s","Drought":1,"Flood":54,"Epidemic":59,"Earthquake":454,"Storms":172,"Other":100},
+    {"decade":"2010s","Drought":20,"Flood":40,"Epidemic":34,"Earthquake":261,"Storms":21,"Other":79}
+  ],
+  "mapping": {
+    "label": "decade",
+    "series": [
+      "Drought",
+      "Flood",
+      "Epidemic",
+      "Earthquake",
+      "Storms",
+      "Other"
+    ]
+  },
+  "options": {
+    "mode": "normal",
+    "orientation": "vertical"
+  },
+  "style": {
+    "theme": "newsprint",
+    "palette": "editorial",
+    "size": "landscape"
+  }
+}

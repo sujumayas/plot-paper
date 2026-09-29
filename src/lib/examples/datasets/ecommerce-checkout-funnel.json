@@ -1,0 +1,38 @@
+{
+  "id": "ecommerce-checkout-funnel",
+  "chartType": "funnel",
+  "title": "Only 1 in 26 visitors buys — the biggest leak is between product page and cart",
+  "subtitle": "Unique sessions reaching each step, online store, September 2025 (illustrative)",
+  "source": "Illustrative data",
+  "sourceUrl": "",
+  "note": "Illustrative example; conversion rates are in the typical range for consumer e-commerce.",
+  "description": "A five-step purchase funnel from landing to order, showing where shoppers drop off.",
+  "tags": [
+    "business",
+    "marketing",
+    "conversion",
+    "illustrative"
+  ],
+  "author": "camila.t",
+  "columns": [
+    "stage",
+    "sessions"
+  ],
+  "rows": [
+    {"stage":"Visited store","sessions":48200},
+    {"stage":"Viewed a product","sessions":21700},
+    {"stage":"Added to cart","sessions":6900},
+    {"stage":"Started checkout","sessions":3100},
+    {"stage":"Completed purchase","sessions":1870}
+  ],
+  "mapping": {
+    "label": "stage",
+    "value": "sessions"
+  },
+  "options": {},
+  "style": {
+    "theme": "pastel",
+    "palette": "sunset",
+    "size": "landscape"
+  }
+}

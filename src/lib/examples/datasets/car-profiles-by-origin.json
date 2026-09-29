@@ -1,0 +1,44 @@
+{
+  "id": "car-profiles-by-origin",
+  "chartType": "radar",
+  "title": "1970s American cars: heavier, bigger engines, more cylinders",
+  "subtitle": "Average specs by region of origin, indexed to the all-car average (= 100), model years 1970–1982",
+  "source": "UCI Machine Learning Repository (Auto MPG) via vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/cars.json",
+  "note": "0–60 time is seconds from 0 to 60 mph; a higher index means slower acceleration.",
+  "description": "Three automotive philosophies on one radar: US muscle versus European and Japanese economy.",
+  "tags": [
+    "cars",
+    "comparison",
+    "classic-dataset"
+  ],
+  "author": "felipe.m",
+  "columns": [
+    "axis",
+    "USA",
+    "Europe",
+    "Japan"
+  ],
+  "rows": [
+    {"axis":"Fuel economy","USA":85,"Europe":119,"Japan":129},
+    {"axis":"Horsepower","USA":114,"Europe":77,"Japan":76},
+    {"axis":"Weight","USA":113,"Europe":82,"Japan":75},
+    {"axis":"Engine size","USA":127,"Europe":56,"Japan":53},
+    {"axis":"0–60 time","USA":96,"Europe":108,"Japan":104},
+    {"axis":"Cylinders","USA":115,"Europe":76,"Japan":75}
+  ],
+  "mapping": {
+    "axis": "axis",
+    "series": [
+      "USA",
+      "Europe",
+      "Japan"
+    ]
+  },
+  "options": {},
+  "style": {
+    "theme": "blueprint",
+    "palette": "blueprint",
+    "size": "square"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "seattle-monthly-rainfall",
+  "chartType": "bar",
+  "title": "November is Seattle's wettest month; July barely sees rain",
+  "subtitle": "Average total precipitation per month, millimetres, Seattle, 2012–2015",
+  "source": "NOAA NCEI via vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/seattle-weather.csv",
+  "note": "",
+  "description": "Seattle's wet season and dry season in twelve bars.",
+  "tags": [
+    "weather",
+    "seasonality"
+  ],
+  "author": "ana.s",
+  "columns": [
+    "month",
+    "precipitation"
+  ],
+  "rows": [
+    {"month":"Jan","precipitation":116.5},
+    {"month":"Feb","precipitation":105.5},
+    {"month":"Mar","precipitation":151.6},
+    {"month":"Apr","precipitation":93.9},
+    {"month":"May","precipitation":51.9},
+    {"month":"Jun","precipitation":33.2},
+    {"month":"Jul","precipitation":12.1},
+    {"month":"Aug","precipitation":40.9},
+    {"month":"Sep","precipitation":58.9},
+    {"month":"Oct","precipitation":125.9},
+    {"month":"Nov","precipitation":160.6},
+    {"month":"Dec","precipitation":155.7}
+  ],
+  "mapping": {
+    "label": "month",
+    "value": "precipitation"
+  },
+  "options": {
+    "sort": "none",
+    "highlight": "max",
+    "colorBy": "single"
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "ocean",
+    "size": "landscape"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "id": "electricity-mix-by-country",
+  "chartType": "stacked",
+  "title": "Some grids are nearly fossil-free; others still run on coal and gas",
+  "subtitle": "Electricity generation by source, % of total, 2025",
+  "source": "Ember and Energy Institute via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/share-elec-by-source",
+  "note": "Fossil = coal + gas + oil. Other renewables = bioenergy, geothermal, wave and tidal.",
+  "description": "Twelve countries, twelve very different power systems: hydro in Norway and Brazil, nuclear in France, coal in India, South Africa and Poland.",
+  "tags": [
+    "energy",
+    "climate",
+    "comparison",
+    "global"
+  ],
+  "author": "hannah.l",
+  "columns": [
+    "country",
+    "Fossil",
+    "Nuclear",
+    "Hydro",
+    "Wind & solar",
+    "Other renewables"
+  ],
+  "rows": [
+    {"country":"Norway","Fossil":1,"Nuclear":0,"Hydro":90,"Wind & solar":8.8,"Other renewables":0.2},
+    {"country":"Brazil","Fossil":11.3,"Nuclear":2.1,"Hydro":51.8,"Wind & solar":27.5,"Other renewables":7.3},
+    {"country":"France","Fossil":5.1,"Nuclear":68.8,"Hydro":10.4,"Wind & solar":13.7,"Other renewables":1.9},
+    {"country":"Peru","Fossil":36.4,"Nuclear":0,"Hydro":56.1,"Wind & solar":6.5,"Other renewables":1.1},
+    {"country":"UK","Fossil":35.6,"Nuclear":12.4,"Hydro":1.9,"Wind & solar":36,"Other renewables":14.1},
+    {"country":"Germany","Fossil":40.9,"Nuclear":0,"Hydro":3.9,"Wind & solar":45.1,"Other renewables":10.1},
+    {"country":"United States","Fossil":57,"Nuclear":17.4,"Hydro":5.3,"Wind & solar":18.9,"Other renewables":1.4},
+    {"country":"China","Fossil":58.3,"Nuclear":4.6,"Hydro":13.2,"Wind & solar":21.8,"Other renewables":2},
+    {"country":"Japan","Fossil":67.3,"Nuclear":9.1,"Hydro":7.2,"Wind & solar":11.1,"Other renewables":5.3},
+    {"country":"India","Fossil":73.3,"Nuclear":2.6,"Hydro":8.5,"Wind & solar":14.4,"Other renewables":1.1},
+    {"country":"South Africa","Fossil":82.2,"Nuclear":4.2,"Hydro":0.8,"Wind & solar":12.7,"Other renewables":0.2},
+    {"country":"Poland","Fossil":68.5,"Nuclear":0,"Hydro":1,"Wind & solar":25.5,"Other renewables":5}
+  ],
+  "mapping": {
+    "label": "country",
+    "series": [
+      "Fossil",
+      "Nuclear",
+      "Hydro",
+      "Wind & solar",
+      "Other renewables"
+    ]
+  },
+  "options": {
+    "mode": "percent",
+    "orientation": "horizontal"
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "colorblind",
+    "size": "landscape"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "presidentes-peru-2016-2025",
+  "chartType": "timeline",
+  "title": "Seis presidentes en nueve años",
+  "subtitle": "Mandatos presidenciales en el Perú, del 28 de julio de 2016 al 10 de octubre de 2025, según forma de salida",
+  "source": "Wikipedia, «Presidente del Perú» / «Anexo:Presidentes del Perú»",
+  "sourceUrl": "https://es.wikipedia.org/wiki/Anexo:Presidentes_del_Per%C3%BA",
+  "note": "Fechas de juramentación y salida. Vacancia = destitución por el Congreso por «incapacidad moral permanente». El periodo termina con la vacancia de Dina Boluarte.",
+  "description": "La inestabilidad política peruana en una línea de tiempo: tres vacancias, dos renuncias y un solo gobierno de transición que completó su periodo.",
+  "tags": [
+    "es",
+    "perú",
+    "política",
+    "historia"
+  ],
+  "author": "valeria.c",
+  "columns": [
+    "presidente",
+    "inicio",
+    "fin",
+    "salida"
+  ],
+  "rows": [
+    {"presidente":"Pedro Pablo Kuczynski","inicio":"2016-07-28","fin":"2018-03-23","salida":"Renuncia"},
+    {"presidente":"Martín Vizcarra","inicio":"2018-03-23","fin":"2020-11-10","salida":"Vacancia"},
+    {"presidente":"Manuel Merino","inicio":"2020-11-10","fin":"2020-11-15","salida":"Renuncia"},
+    {"presidente":"Francisco Sagasti","inicio":"2020-11-17","fin":"2021-07-28","salida":"Fin de mandato"},
+    {"presidente":"Pedro Castillo","inicio":"2021-07-28","fin":"2022-12-07","salida":"Vacancia"},
+    {"presidente":"Dina Boluarte","inicio":"2022-12-07","fin":"2025-10-10","salida":"Vacancia"}
+  ],
+  "mapping": {
+    "task": "presidente",
+    "start": "inicio",
+    "end": "fin",
+    "group": "salida"
+  },
+  "options": {},
+  "style": {
+    "theme": "newsprint",
+    "palette": "newsroom",
+    "size": "landscape"
+  }
+}

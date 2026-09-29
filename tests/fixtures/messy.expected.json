@@ -1,0 +1,27 @@
+[
+  {
+    "row": 0,
+    "column": "Ventas",
+    "value": 1234.5
+  },
+  {
+    "row": 1,
+    "column": "Ventas",
+    "value": 1200
+  },
+  {
+    "row": 2,
+    "column": "Costo",
+    "value": -300
+  },
+  {
+    "row": 3,
+    "column": "Margen",
+    "value": 12.5
+  },
+  {
+    "row": 4,
+    "column": "Ventas_2",
+    "value": 2310.75
+  }
+]

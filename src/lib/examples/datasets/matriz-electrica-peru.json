@@ -1,0 +1,38 @@
+{
+  "id": "matriz-electrica-peru",
+  "chartType": "pie",
+  "title": "El agua genera más de la mitad de la electricidad del Perú",
+  "subtitle": "Participación en la generación eléctrica del Perú por fuente, %, 2025",
+  "source": "Ember vía Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/share-elec-by-source?country=~PER",
+  "note": "El gas natural proviene principalmente del yacimiento de Camisea (Cusco).",
+  "description": "La matriz eléctrica peruana descansa en dos pilares: las centrales hidroeléctricas y el gas de Camisea; eólica y solar suman cerca de 6,5%.",
+  "tags": [
+    "es",
+    "perú",
+    "energía",
+    "composición"
+  ],
+  "author": "diego.q",
+  "columns": [
+    "fuente",
+    "porcentaje"
+  ],
+  "rows": [
+    {"fuente":"Hidroeléctrica","porcentaje":56.1},
+    {"fuente":"Gas natural","porcentaje":36.1},
+    {"fuente":"Eólica","porcentaje":3.5},
+    {"fuente":"Solar","porcentaje":3},
+    {"fuente":"Otras (biomasa, petróleo, carbón)","porcentaje":1.3}
+  ],
+  "mapping": {
+    "label": "fuente",
+    "value": "porcentaje"
+  },
+  "options": {},
+  "style": {
+    "theme": "clean",
+    "palette": "ocean",
+    "size": "square"
+  }
+}

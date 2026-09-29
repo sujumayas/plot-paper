@@ -1,0 +1,90 @@
+{
+  "id": "solar-module-prices",
+  "chartType": "line",
+  "title": "Solar panels cost 99.8% less than in 1975",
+  "subtitle": "Average price of solar photovoltaic modules, constant 2025 US$ per watt, 1975–2024",
+  "source": "IRENA, Nemet (2009), Farmer & Lafond (2016) via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/solar-pv-prices",
+  "note": "Global estimates before 2010; European market benchmarks thereafter. Module price only, excluding installation.",
+  "description": "The learning curve that changed energy: from over $100 per watt to a few cents.",
+  "tags": [
+    "energy",
+    "climate",
+    "technology",
+    "time-series"
+  ],
+  "author": "mara.k",
+  "columns": [
+    "year",
+    "usd_per_watt"
+  ],
+  "rows": [
+    {"year":1975,"usd_per_watt":132.38},
+    {"year":1976,"usd_per_watt":99.6},
+    {"year":1977,"usd_per_watt":72.66},
+    {"year":1978,"usd_per_watt":51.41},
+    {"year":1979,"usd_per_watt":43.2},
+    {"year":1980,"usd_per_watt":36.6},
+    {"year":1981,"usd_per_watt":29.27},
+    {"year":1982,"usd_per_watt":26.3},
+    {"year":1983,"usd_per_watt":21.23},
+    {"year":1984,"usd_per_watt":19.73},
+    {"year":1985,"usd_per_watt":17.22},
+    {"year":1986,"usd_per_watt":14.24},
+    {"year":1987,"usd_per_watt":12.11},
+    {"year":1988,"usd_per_watt":11.31},
+    {"year":1989,"usd_per_watt":11.69},
+    {"year":1990,"usd_per_watt":12.09},
+    {"year":1991,"usd_per_watt":11.2},
+    {"year":1992,"usd_per_watt":10.44},
+    {"year":1993,"usd_per_watt":9.76},
+    {"year":1994,"usd_per_watt":9.23},
+    {"year":1995,"usd_per_watt":8.54},
+    {"year":1996,"usd_per_watt":7.98},
+    {"year":1997,"usd_per_watt":7.95},
+    {"year":1998,"usd_per_watt":7.17},
+    {"year":1999,"usd_per_watt":6.62},
+    {"year":2000,"usd_per_watt":6.5},
+    {"year":2001,"usd_per_watt":6.28},
+    {"year":2002,"usd_per_watt":5.75},
+    {"year":2003,"usd_per_watt":5.46},
+    {"year":2004,"usd_per_watt":4.7},
+    {"year":2005,"usd_per_watt":4.75},
+    {"year":2006,"usd_per_watt":5.17},
+    {"year":2007,"usd_per_watt":5.21},
+    {"year":2008,"usd_per_watt":4.75},
+    {"year":2009,"usd_per_watt":3.17},
+    {"year":2010,"usd_per_watt":2.51},
+    {"year":2011,"usd_per_watt":2.06},
+    {"year":2012,"usd_per_watt":1.11},
+    {"year":2013,"usd_per_watt":0.86},
+    {"year":2014,"usd_per_watt":0.79},
+    {"year":2015,"usd_per_watt":0.74},
+    {"year":2016,"usd_per_watt":0.68},
+    {"year":2017,"usd_per_watt":0.57},
+    {"year":2018,"usd_per_watt":0.51},
+    {"year":2019,"usd_per_watt":0.47},
+    {"year":2020,"usd_per_watt":0.37},
+    {"year":2021,"usd_per_watt":0.33},
+    {"year":2022,"usd_per_watt":0.37},
+    {"year":2023,"usd_per_watt":0.32},
+    {"year":2024,"usd_per_watt":0.27}
+  ],
+  "mapping": {
+    "x": "year",
+    "series": [
+      "usd_per_watt"
+    ]
+  },
+  "options": {
+    "curve": "linear",
+    "yZero": "yes",
+    "markers": "no",
+    "endLabels": true
+  },
+  "style": {
+    "theme": "emerald",
+    "palette": "emerald",
+    "size": "landscape"
+  }
+}

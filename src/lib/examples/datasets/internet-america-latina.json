@@ -1,0 +1,48 @@
+{
+  "id": "internet-america-latina",
+  "chartType": "lollipop",
+  "title": "Nueve de cada diez chilenos usan internet; en Honduras, poco más de la mitad",
+  "subtitle": "Porcentaje de la población que usó internet en los últimos tres meses, 2023",
+  "source": "Unión Internacional de Telecomunicaciones (UIT) vía Banco Mundial y Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/share-of-individuals-using-the-internet",
+  "note": "",
+  "description": "La brecha digital latinoamericana: del Cono Sur casi totalmente conectado a Centroamérica, donde millones siguen fuera de línea.",
+  "tags": [
+    "es",
+    "latam",
+    "tecnología",
+    "ranking"
+  ],
+  "author": "valeria.c",
+  "columns": [
+    "pais",
+    "usuarios"
+  ],
+  "rows": [
+    {"pais":"Chile","usuarios":94.5},
+    {"pais":"Uruguay","usuarios":90.9},
+    {"pais":"Argentina","usuarios":89.2},
+    {"pais":"Costa Rica","usuarios":85.4},
+    {"pais":"Brasil","usuarios":84.2},
+    {"pais":"México","usuarios":81.2},
+    {"pais":"Perú","usuarios":79.5},
+    {"pais":"Paraguay","usuarios":78.1},
+    {"pais":"Colombia","usuarios":77.3},
+    {"pais":"Bolivia","usuarios":77.3},
+    {"pais":"Ecuador","usuarios":72.7},
+    {"pais":"Panamá","usuarios":68.5},
+    {"pais":"El Salvador","usuarios":62.6},
+    {"pais":"Honduras","usuarios":58.1},
+    {"pais":"Guatemala","usuarios":56.7}
+  ],
+  "mapping": {
+    "label": "pais",
+    "value": "usuarios"
+  },
+  "options": {},
+  "style": {
+    "theme": "pastel",
+    "palette": "vivid",
+    "size": "portrait"
+  }
+}

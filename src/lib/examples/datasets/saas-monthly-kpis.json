@@ -1,0 +1,44 @@
+{
+  "id": "saas-monthly-kpis",
+  "chartType": "kpi",
+  "title": "August: revenue and retention up, customer growth steady",
+  "subtitle": "Key subscription metrics, August 2025 vs. July 2025 (illustrative)",
+  "source": "Illustrative data",
+  "sourceUrl": "",
+  "note": "Illustrative example dashboard; not real company data.",
+  "description": "Four headline SaaS metrics as KPI tiles with month-over-month change.",
+  "tags": [
+    "business",
+    "saas",
+    "dashboard",
+    "illustrative"
+  ],
+  "author": "nico.p",
+  "columns": [
+    "metric",
+    "value",
+    "change",
+    "caption"
+  ],
+  "rows": [
+    {"metric":"MRR (US$)","value":184200,"change":6.8,"caption":"vs. July"},
+    {"metric":"Paying customers","value":1236,"change":3.1,"caption":"vs. July"},
+    {"metric":"Net revenue retention (%)","value":112,"change":2.7,"caption":"trailing 12 months"},
+    {"metric":"Avg. revenue per account (US$)","value":149,"change":3.6,"caption":"vs. July"}
+  ],
+  "mapping": {
+    "label": "metric",
+    "value": "value",
+    "delta": "change",
+    "caption": "caption"
+  },
+  "options": {
+    "deltaSuffix": "%",
+    "goodWhen": "up"
+  },
+  "style": {
+    "theme": "midnight",
+    "palette": "neon",
+    "size": "compact"
+  }
+}

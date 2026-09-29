@@ -1,0 +1,44 @@
+{
+  "id": "co2-per-capita-1990-vs-now",
+  "chartType": "slope",
+  "title": "China's per-person emissions nearly quadrupled as the US and UK cut theirs",
+  "subtitle": "CO₂ emissions from fossil fuels and industry per person, tonnes, 1990 vs. 2024",
+  "source": "Global Carbon Budget via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/co-emissions-per-capita",
+  "note": "Territorial emissions; excludes land-use change.",
+  "description": "Since 1990, rich countries' per-capita emissions have fallen while China's overtook Europe's.",
+  "tags": [
+    "climate",
+    "emissions",
+    "comparison"
+  ],
+  "author": "tomas.v",
+  "columns": [
+    "country",
+    "t_1990",
+    "t_2024"
+  ],
+  "rows": [
+    {"country":"United States","t_1990":20.3,"t_2024":14.2},
+    {"country":"Australia","t_1990":16.2,"t_2024":14.5},
+    {"country":"Russia","t_1990":17,"t_2024":12.3},
+    {"country":"Germany","t_1990":13.2,"t_2024":6.8},
+    {"country":"Japan","t_1990":9.4,"t_2024":7.8},
+    {"country":"China","t_1990":2.2,"t_2024":8.7},
+    {"country":"UK","t_1990":10.5,"t_2024":4.5},
+    {"country":"World","t_1990":4.3,"t_2024":4.7},
+    {"country":"Brazil","t_1990":1.5,"t_2024":2.3},
+    {"country":"India","t_1990":0.7,"t_2024":2.2}
+  ],
+  "mapping": {
+    "label": "country",
+    "start": "t_1990",
+    "end": "t_2024"
+  },
+  "options": {},
+  "style": {
+    "theme": "paper",
+    "palette": "editorial",
+    "size": "portrait"
+  }
+}

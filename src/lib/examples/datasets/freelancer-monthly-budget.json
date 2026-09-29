@@ -1,0 +1,44 @@
+{
+  "id": "freelancer-monthly-budget",
+  "chartType": "donut",
+  "title": "Rent and taxes eat half of a freelancer's monthly budget",
+  "subtitle": "Monthly spending by category, US$, total $3,150 (illustrative)",
+  "source": "Illustrative data",
+  "sourceUrl": "",
+  "note": "Illustrative personal budget; not based on a survey.",
+  "description": "A personal-finance donut: where one month's income goes, with the total in the centre.",
+  "tags": [
+    "personal-finance",
+    "budget",
+    "composition",
+    "illustrative"
+  ],
+  "author": "ana.s",
+  "columns": [
+    "category",
+    "usd"
+  ],
+  "rows": [
+    {"category":"Rent","usd":950},
+    {"category":"Taxes (set aside)","usd":600},
+    {"category":"Savings & retirement","usd":500},
+    {"category":"Groceries & dining","usd":420},
+    {"category":"Fun & travel","usd":250},
+    {"category":"Health insurance","usd":180},
+    {"category":"Software & tools","usd":140},
+    {"category":"Transport","usd":110}
+  ],
+  "mapping": {
+    "label": "category",
+    "value": "usd"
+  },
+  "options": {
+    "centerText": "$3,150",
+    "hole": 0.62
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "pastel",
+    "size": "story"
+  }
+}

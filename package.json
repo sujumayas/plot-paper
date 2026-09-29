@@ -1,6 +1,6 @@
 {
   "name": "plotpaper",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,24 +8,45 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed": "tsx scripts/seed.ts"
+    "gen:examples": "node scripts/gen-examples.mjs",
+    "render:gallery": "tsx --tsconfig tsconfig.scripts.json scripts/render-gallery.tsx",
+    "seed": "tsx scripts/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "check": "npm run typecheck && npm test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.129.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.47.10",
     "clsx": "^2.1.1",
-    "next": "^15.1.6",
+    "marked": "^18.0.14",
+    "next": "^15.5.26",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@fontsource/dm-serif-display": "^5.3.0",
+    "@fontsource/fraunces": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/montserrat": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4.0.0",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
+    "@vitest/coverage-v8": "^5.0.2",
+    "jsdom": "^30.1.1",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^5.0.2"
   },
   "engines": {
     "node": ">=20"
