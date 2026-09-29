@@ -54,7 +54,7 @@ The **Style** tab:
 
 ## 4. Export & share
 
-The blue **PNG** button downloads a high-resolution image (2× by default — pick 1×–4× in the menu). The menu also offers:
+The blue **PNG** button (or **⌘S / Ctrl+S**) downloads a high-resolution image (2× by default — pick 1×–4× in the menu). The menu also offers:
 
 - **SVG** — a vector file you can edit in Figma, Illustrator or Keynote.
 - **PDF** — opens your browser's print dialog at the chart's exact size ("Save as PDF").

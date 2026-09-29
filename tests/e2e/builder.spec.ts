@@ -255,3 +255,10 @@ test.describe("other exports", () => {
     await expect(await posterSvg(page)).toContainText("From revenue to net profit");
   });
 });
+
+test("Ctrl+S downloads the PNG", async ({ page }) => {
+  await openBuilder(page);
+  const download = page.waitForEvent("download");
+  await page.keyboard.press("Control+s");
+  expect((await download).suggestedFilename()).toMatch(/\.png$/);
+});

@@ -19,6 +19,15 @@ export interface Example {
 export function exampleToDoc(raw: RawExample): ChartDoc {
   const columns = inferColumns(raw.rows, raw.columns);
   const size = SIZE_PRESETS.find((s) => s.id === raw.style?.size) ?? SIZE_PRESETS[0];
+  const style = defaultStyle({
+    theme: raw.style?.theme ?? "clean",
+    palette: raw.style?.palette ?? null,
+    size: size.id,
+    width: size.width,
+    height: size.height,
+  });
+  // Spanish examples use Spanish separators (8,8 %), matching their titles.
+  if ((raw.tags ?? []).includes("es")) style.number = { ...style.number, locale: "es-ES" };
   return {
     version: 1,
     chartType: raw.chartType,
@@ -30,13 +39,7 @@ export function exampleToDoc(raw: RawExample): ChartDoc {
     data: coerceRows(raw.rows, columns),
     mapping: raw.mapping ?? {},
     options: raw.options ?? {},
-    style: defaultStyle({
-      theme: raw.style?.theme ?? "clean",
-      palette: raw.style?.palette ?? null,
-      size: size.id,
-      width: size.width,
-      height: size.height,
-    }),
+    style,
   };
 }
 

@@ -36,6 +36,13 @@ export function ExportMenu({ doc, def, onImport }: Props) {
   }, []);
   const opts = { locale, credit: siteConfig.credit, scale };
 
+  const pngRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const onShortcut = () => pngRef.current?.click();
+    window.addEventListener("pp:export-png", onShortcut);
+    return () => window.removeEventListener("pp:export-png", onShortcut);
+  }, []);
+
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
     try {
@@ -51,9 +58,11 @@ export function ExportMenu({ doc, def, onImport }: Props) {
     <>
       <div style={{ display: "flex" }}>
         <button
+          ref={pngRef}
           className="btn primary"
           type="button"
           disabled={busy}
+          title="⌘S / Ctrl+S"
           style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
           onClick={() =>
             run(async () => {

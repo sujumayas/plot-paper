@@ -144,7 +144,7 @@ export default async function Home() {
                 {t("landing.creatorCta")}
               </Link>
             </div>
-            <pre aria-label="PlotSpec example">{specPreview}</pre>
+            <pre aria-label="PlotSpec example" tabIndex={0}>{specPreview}</pre>
           </div>
         </section>
 

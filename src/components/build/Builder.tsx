@@ -113,9 +113,15 @@ export function Builder() {
   // ── Keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === "s") {
+        // ⌘S / Ctrl+S downloads the PNG instead of saving the web page.
+        e.preventDefault();
+        window.dispatchEvent(new Event("pp:export-png"));
+        return;
+      }
       const el = e.target as HTMLElement;
       if (el.closest("input, textarea, select, [contenteditable]")) return;
-      const mod = e.metaKey || e.ctrlKey;
       if (mod && e.key.toLowerCase() === "z") {
         e.preventDefault();
         if (e.shiftKey) history.redo();

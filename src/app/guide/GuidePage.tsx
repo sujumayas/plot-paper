@@ -9,7 +9,7 @@ export async function GuidePage({ slug }: { slug: GuideSlug }) {
       <div className="container" style={{ paddingTop: 24 }}>
         <nav className="filters" aria-label="Guide">
           {Object.entries(GUIDES).map(([s, g]) => (
-            <Link key={s} className="chip" aria-pressed={s === slug} href={(s ? `/guide/${s}` : "/guide") as never} style={{ textDecoration: "none" }}>
+            <Link key={s} className="chip" aria-current={s === slug ? "page" : undefined} href={(s ? `/guide/${s}` : "/guide") as never} style={{ textDecoration: "none" }}>
               {g.title}
             </Link>
           ))}
