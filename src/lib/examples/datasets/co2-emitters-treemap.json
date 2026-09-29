@@ -1,0 +1,58 @@
+{
+  "id": "co2-emitters-treemap",
+  "chartType": "treemap",
+  "title": "China alone emits almost a third of the world's CO₂",
+  "subtitle": "Annual CO₂ emissions from fossil fuels and industry, million tonnes, 2024; top 24 countries",
+  "source": "Global Carbon Budget via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/annual-co2-emissions-per-country",
+  "note": "'Rest of world' also includes international aviation and shipping, which are not assigned to countries.",
+  "description": "The global carbon budget as a mosaic: a handful of economies account for most of the total.",
+  "tags": [
+    "climate",
+    "emissions",
+    "composition",
+    "global"
+  ],
+  "author": "tomas.v",
+  "columns": [
+    "country",
+    "mt"
+  ],
+  "rows": [
+    {"country":"China","mt":12289},
+    {"country":"United States","mt":4904},
+    {"country":"India","mt":3193},
+    {"country":"Russia","mt":1781},
+    {"country":"Japan","mt":962},
+    {"country":"Indonesia","mt":812},
+    {"country":"Iran","mt":793},
+    {"country":"Saudi Arabia","mt":692},
+    {"country":"South Korea","mt":584},
+    {"country":"Germany","mt":572},
+    {"country":"Canada","mt":533},
+    {"country":"Turkey","mt":513},
+    {"country":"Brazil","mt":483},
+    {"country":"Mexico","mt":461},
+    {"country":"South Africa","mt":440},
+    {"country":"Australia","mt":387},
+    {"country":"Vietnam","mt":371},
+    {"country":"United Kingdom","mt":313},
+    {"country":"Italy","mt":302},
+    {"country":"Malaysia","mt":290},
+    {"country":"Kazakhstan","mt":287},
+    {"country":"Poland","mt":273},
+    {"country":"Thailand","mt":268},
+    {"country":"France","mt":264},
+    {"country":"Rest of world (incl. aviation & shipping)","mt":6832}
+  ],
+  "mapping": {
+    "label": "country",
+    "value": "mt"
+  },
+  "options": {},
+  "style": {
+    "theme": "clean",
+    "palette": "sunset",
+    "size": "landscape"
+  }
+}

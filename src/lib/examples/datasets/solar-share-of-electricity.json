@@ -1,0 +1,70 @@
+{
+  "id": "solar-share-of-electricity",
+  "chartType": "multiline",
+  "title": "Chile now gets a quarter of its electricity from the sun",
+  "subtitle": "Solar share of electricity generation, %, 2010–2025",
+  "source": "Ember and Energy Institute via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/share-elec-by-source",
+  "note": "Chile's Atacama Desert has some of the highest solar irradiance on Earth.",
+  "description": "Fifteen years of solar growth in sunny leaders and the biggest grids, with the world average for reference.",
+  "tags": [
+    "energy",
+    "climate",
+    "latam",
+    "time-series"
+  ],
+  "author": "hannah.l",
+  "columns": [
+    "year",
+    "Chile",
+    "Australia",
+    "Spain",
+    "Germany",
+    "China",
+    "United States",
+    "India",
+    "World"
+  ],
+  "rows": [
+    {"year":2010,"Chile":0,"Australia":0.4,"Spain":2.4,"Germany":1.9,"China":0,"United States":0,"India":0,"World":0.2},
+    {"year":2011,"Chile":0,"Australia":0.8,"Spain":3.2,"Germany":3.3,"China":0.1,"United States":0,"India":0.1,"World":0.3},
+    {"year":2012,"Chile":0,"Australia":1,"Spain":4.1,"Germany":4.3,"China":0.1,"United States":0.1,"India":0.2,"World":0.4},
+    {"year":2013,"Chile":0,"Australia":1.5,"Spain":4.7,"Germany":4.9,"China":0.2,"United States":0.2,"India":0.3,"World":0.6},
+    {"year":2014,"Chile":0.7,"Australia":2,"Spain":5,"Germany":5.7,"China":0.4,"United States":0.7,"India":0.4,"World":0.8},
+    {"year":2015,"Chile":1.7,"Australia":2.4,"Spain":5,"Germany":6,"China":0.7,"United States":1,"India":0.5,"World":1.1},
+    {"year":2016,"Chile":3.3,"Australia":2.9,"Spain":5,"Germany":5.9,"China":1.1,"United States":1.3,"India":0.9,"World":1.3},
+    {"year":2017,"Chile":4.9,"Australia":3.4,"Spain":5.3,"Germany":6,"China":1.8,"United States":1.9,"India":1.5,"World":1.7},
+    {"year":2018,"Chile":6.3,"Australia":4.7,"Spain":4.7,"Germany":7,"China":2.5,"United States":2.2,"India":2.4,"World":2.2},
+    {"year":2019,"Chile":7.5,"Australia":6.9,"Spain":5.6,"Germany":7.5,"China":3,"United States":2.6,"India":2.3,"World":2.6},
+    {"year":2020,"Chile":9,"Australia":9,"Spain":8,"Germany":8.7,"China":3.4,"United States":3.2,"India":3.4,"World":3.2},
+    {"year":2021,"Chile":12,"Australia":11.7,"Spain":10,"Germany":8.5,"China":3.8,"United States":4,"India":3.9,"World":3.7},
+    {"year":2022,"Chile":17.3,"Australia":13.8,"Spain":12.4,"Germany":10.6,"China":4.8,"United States":4.8,"India":5.3,"World":4.6},
+    {"year":2023,"Chile":20.1,"Australia":16.5,"Spain":17.4,"Germany":12.6,"China":6.2,"United States":5.6,"India":6,"World":5.6},
+    {"year":2024,"Chile":22.8,"Australia":17.8,"Spain":20.7,"Germany":14.9,"China":8.3,"United States":6.9,"India":7,"World":6.9},
+    {"year":2025,"Chile":25.1,"Australia":19.6,"Spain":21.8,"Germany":17.9,"China":11.1,"United States":8.6,"India":9.4,"World":8.7}
+  ],
+  "mapping": {
+    "x": "year",
+    "series": [
+      "Chile",
+      "Australia",
+      "Spain",
+      "Germany",
+      "China",
+      "United States",
+      "India",
+      "World"
+    ]
+  },
+  "options": {
+    "curve": "smooth",
+    "endLabels": true,
+    "highlightSeries": "Chile",
+    "yZero": "yes"
+  },
+  "style": {
+    "theme": "paper",
+    "palette": "sunset",
+    "size": "landscape"
+  }
+}

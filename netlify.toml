@@ -6,9 +6,11 @@
   package = "@netlify/plugin-nextjs"
 
 [build.environment]
-  NODE_VERSION = "20"
-  # NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY set in dashboard.
-  # ANTHROPIC_API_KEY lives as a Supabase edge function secret, NOT here.
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+  # Optional, set in the Netlify dashboard (see docs/self-hosting.md):
+  #   ANTHROPIC_API_KEY                 enables AI (server-side only)
+  #   NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY   accounts + community gallery
 
 [[headers]]
   for = "/auth/callback"

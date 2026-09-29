@@ -1,0 +1,38 @@
+﻿Región;Tienda;Fecha;Ventas;Costo;Margen;Unidades;Variación;Comentario;Ventas  
+Lima;"Lima, Miraflores";03/01/2025;  1.234,5  ;"S/ 850,00";31,1%;42;12%;;"US$ 331,85"
+Arequipa;"Arequipa, Cayma";03/01/2025;S/ 1.200;S/ 1.020;15%;30;-4%;"Cliente pidió factura, RUC pendiente";US$ 322,58
+Cusco;Cusco Centro;04/01/2025;S/ 980,40;(300);N/A;25;-;"Devolución de mercadería
+(nota de crédito 001-245)";US$ 263,55
+Trujillo;Trujillo Mall;04/01/2025;S/ 2.045,00;S/ 1.789,40;12,5%;51;8%;;US$ 549,73
+Piura;"Piura, Castilla";05/01/2025;S/ 8.595,99;S/ 6.100,00;29%;190;"";Promoción aniversario;"US$ 2.310,75"
+Lima;"Lima, San Isidro";06/01/2025;S/ 3.320,20;S/ 2.167,42;34,7%;87;-11%;;"US$ 892,53"
+
+Lima;Lima Norte;06/01/2025;S/ 3.671,79;S/ 2.277,61;38,0%;104;-13%;;"US$ 987,04"
+Arequipa;Arequipa Centro;07/01/2025;S/ 4.242,62;;-;158;12%;Sin datos de costo;"US$ 1.140,49"
+Cusco;"Cusco, San Sebastián";07/01/2025;S/ 7.545,56;S/ 4.854,29;35,7%;256;25%;;"US$ 2.028,38"
+Chiclayo;Chiclayo Real Plaza;08/01/2025;N/A;S/ 4.024,94;;122;-13%;"Tienda cerrada; inventario";N/A
+Iquitos;Iquitos Centro;08/01/2025;3.032,72;S/ 1.972,75;35,0%;110;4%;;"US$ 815,25"
+Huancayo;Huancayo Open Plaza;09/01/2025;S/ 1.465,67;(1.172,42);20,0%;50;-9%;"Ajuste contable, ver correo del 12/01";"US$ 394,00"
+Trujillo;"Trujillo, Víctor Larco";09/01/2025;5.340,69 ;S/ 4.361,49;18,3%;152;19%;;"US$ 1.435,67"
+
+Piura;Piura Centro;10/01/2025;S/7.128,72;S/ 5.438,93;23,7%;163;8%;;"US$ 1.916,32"
+Lima;"Lima, San Isidro";10/01/2025;S/2.686,78;S/ 1.781,12;33,7%;66;(5%);;"US$ 722,25"
+Lima;Lima Norte;11/01/2025;S/ 5.011,65;S/ 4.542,05;9,4%;126;3%;;"US$ 1.347,22"
+Arequipa;Arequipa Centro;11/01/2025;1.591,75 ;S/ 1.187,99;25,4%;39;-6%;"Nota larga:
+se reprogramó la entrega,
+el cliente pagó en dos partes";"US$ 427,89"
+Cusco;"Cusco, San Sebastián";12/01/2025;S/4.142,27;S/ 3.880,09;6,3%;156;20%;;"US$ 1.113,51"
+Chiclayo;Chiclayo Real Plaza;12/01/2025;S/ 3.457,03;S/ 2.497,92;27,7%;98;14%;;"US$ 929,31"
+Iquitos;Iquitos Centro;13/01/2025;S/ 7.655,73;S/ 7.124,72;6,9%;-;N/A;;"US$ 2.057,99"
+Huancayo;Huancayo Open Plaza;13/01/2025;S/6.741,74;S/ 4.775,60;29,2%;184;13%;;"US$ 1.812,30"
+Trujillo;"Trujillo, Víctor Larco";14/01/2025;S/6.619,67;S/ 6.026,97;9,0%;207;14%;;"US$ 1.779,48"
+
+Piura;Piura Centro;14/01/2025;2.011,61;S/ 1.289,41;35,9%;76;3%
+Lima;"Lima, San Isidro";15/01/2025;S/ 6.802,25;S/ 5.028,66;26,1%;156;16%;;"US$ 1.828,56"
+Lima;Lima Norte;15/01/2025;1.997,48 ;S/ 1.479,28;25,9%;65;-7%;;"US$ 536,96"
+Arequipa;Arequipa Centro;16/01/2025;  S/ 7.857,47	;S/ 5.480,17;30,3%;235;7%;Incluye venta corporativa   ;"US$ 2.112,22"
+Cusco;"Cusco, San Sebastián";16/01/2025;8.644,94;S/ 5.643,61;34,7%;303;-1%;;"US$ 2.323,91"
+Chiclayo;Chiclayo Real Plaza;17/01/2025;S/ 701,33;S/ 624,80;10,9%;24;3%;"Revisar ""precio especial"" aplicado";"US$ 188,53"
+Iquitos;Iquitos Centro;17/01/2025;1.823,68;S/ 1.435,43;21,3%;49;5%;;"US$ 490,24"
+Huancayo;Huancayo Open Plaza;18/01/2025;6.400,15 ;S/ 4.994,82;22,0%;171;-12%;;"US$ 1.720,47"
+

@@ -1,0 +1,54 @@
+{
+  "id": "pib-per-capita-latam",
+  "chartType": "hbar",
+  "title": "Panamá, Uruguay y Chile encabezan la región; Perú queda por debajo del promedio",
+  "subtitle": "PIB per cápita en paridad de poder adquisitivo (PPA), dólares internacionales corrientes, 2024",
+  "source": "Banco Mundial, Indicadores del Desarrollo Mundial",
+  "sourceUrl": "https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.CD",
+  "note": "PPA ajusta por diferencias en el nivel de precios entre países.",
+  "description": "Ranking del ingreso por habitante en 17 países latinoamericanos, con el promedio regional como referencia.",
+  "tags": [
+    "es",
+    "economía",
+    "latam",
+    "ranking"
+  ],
+  "author": "diego.q",
+  "columns": [
+    "pais",
+    "pib_pc"
+  ],
+  "rows": [
+    {"pais":"Panamá","pib_pc":41430},
+    {"pais":"Uruguay","pib_pc":36597},
+    {"pais":"Chile","pib_pc":36071},
+    {"pais":"Costa Rica","pib_pc":31552},
+    {"pais":"Argentina","pib_pc":30475},
+    {"pais":"Rep. Dominicana","pib_pc":27582},
+    {"pais":"México","pib_pc":25820},
+    {"pais":"Promedio América Latina y el Caribe","pib_pc":23060},
+    {"pais":"Colombia","pib_pc":22439},
+    {"pais":"Brasil","pib_pc":22371},
+    {"pais":"Paraguay","pib_pc":18632},
+    {"pais":"Perú","pib_pc":17882},
+    {"pais":"Ecuador","pib_pc":15848},
+    {"pais":"Guatemala","pib_pc":14393},
+    {"pais":"El Salvador","pib_pc":13258},
+    {"pais":"Bolivia","pib_pc":12896},
+    {"pais":"Nicaragua","pib_pc":8721},
+    {"pais":"Honduras","pib_pc":7503}
+  ],
+  "mapping": {
+    "label": "pais",
+    "value": "pib_pc"
+  },
+  "options": {
+    "sort": "desc",
+    "maxItems": 18
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "newsroom",
+    "size": "portrait"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "world-electricity-mix",
+  "chartType": "waffle",
+  "title": "Fossil fuels still generate nearly 6 in 10 units of the world's electricity",
+  "subtitle": "Share of global electricity generation by source, %, 2025",
+  "source": "Ember and Energy Institute via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/share-elec-by-source",
+  "note": "'Oil & other' includes oil, bioenergy, geothermal and other renewables. Shares rounded to whole percentages summing to 100.",
+  "description": "One hundred squares, one world grid: coal and gas still dominate, but solar and wind now rival nuclear.",
+  "tags": [
+    "energy",
+    "climate",
+    "composition",
+    "global"
+  ],
+  "author": "mara.k",
+  "columns": [
+    "source",
+    "share"
+  ],
+  "rows": [
+    {"source":"Coal","share":33},
+    {"source":"Gas","share":22},
+    {"source":"Hydro","share":14},
+    {"source":"Nuclear","share":9},
+    {"source":"Solar","share":9},
+    {"source":"Wind","share":8},
+    {"source":"Oil & other","share":5}
+  ],
+  "mapping": {
+    "label": "source",
+    "value": "share"
+  },
+  "options": {},
+  "style": {
+    "theme": "clean",
+    "palette": "editorial",
+    "size": "square"
+  }
+}

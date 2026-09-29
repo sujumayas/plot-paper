@@ -1,0 +1,59 @@
+{
+  "id": "iowa-electricity-shift",
+  "chartType": "stacked",
+  "title": "Wind remade Iowa's grid: renewables rose from 4% to 39% in 16 years",
+  "subtitle": "Net electricity generation in Iowa by source, % of total, 2001–2017",
+  "source": "US Energy Information Administration via vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/iowa-electricity.csv",
+  "note": "Underlying values are thousand megawatt-hours.",
+  "description": "A farm state's quiet energy transition, shown as a 100% stacked column chart.",
+  "tags": [
+    "energy",
+    "usa",
+    "composition",
+    "time-series"
+  ],
+  "author": "kenji.o",
+  "columns": [
+    "year",
+    "Fossil fuels",
+    "Nuclear",
+    "Renewables"
+  ],
+  "rows": [
+    {"year":"2001","Fossil fuels":35361,"Nuclear":3853,"Renewables":1437},
+    {"year":"2002","Fossil fuels":35991,"Nuclear":4574,"Renewables":1963},
+    {"year":"2003","Fossil fuels":36234,"Nuclear":3988,"Renewables":1885},
+    {"year":"2004","Fossil fuels":36205,"Nuclear":4929,"Renewables":2102},
+    {"year":"2005","Fossil fuels":36883,"Nuclear":4538,"Renewables":2724},
+    {"year":"2006","Fossil fuels":37014,"Nuclear":5095,"Renewables":3364},
+    {"year":"2007","Fossil fuels":41389,"Nuclear":4519,"Renewables":3870},
+    {"year":"2008","Fossil fuels":42734,"Nuclear":5282,"Renewables":5070},
+    {"year":"2009","Fossil fuels":38620,"Nuclear":4679,"Renewables":8560},
+    {"year":"2010","Fossil fuels":42750,"Nuclear":4451,"Renewables":10308},
+    {"year":"2011","Fossil fuels":39361,"Nuclear":5215,"Renewables":11795},
+    {"year":"2012","Fossil fuels":37379,"Nuclear":4347,"Renewables":14949},
+    {"year":"2013","Fossil fuels":34873,"Nuclear":5321,"Renewables":16476},
+    {"year":"2014","Fossil fuels":35250,"Nuclear":4152,"Renewables":17452},
+    {"year":"2015","Fossil fuels":32319,"Nuclear":5243,"Renewables":19091},
+    {"year":"2016","Fossil fuels":28437,"Nuclear":4703,"Renewables":21241},
+    {"year":"2017","Fossil fuels":29329,"Nuclear":5214,"Renewables":21933}
+  ],
+  "mapping": {
+    "label": "year",
+    "series": [
+      "Fossil fuels",
+      "Nuclear",
+      "Renewables"
+    ]
+  },
+  "options": {
+    "mode": "percent",
+    "orientation": "vertical"
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "emerald",
+    "size": "slide"
+  }
+}

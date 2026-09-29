@@ -1,0 +1,50 @@
+{
+  "id": "solar-capacity-leaders",
+  "chartType": "hbar",
+  "title": "China has more solar capacity than the next 14 countries combined",
+  "subtitle": "Installed solar photovoltaic capacity, gigawatts, 2025; top 15 countries",
+  "source": "IRENA via Our World in Data",
+  "sourceUrl": "https://ourworldindata.org/grapher/installed-solar-pv-capacity",
+  "note": "",
+  "description": "The solar league table, dominated by a single country.",
+  "tags": [
+    "energy",
+    "ranking",
+    "climate"
+  ],
+  "author": "hannah.l",
+  "columns": [
+    "country",
+    "gw"
+  ],
+  "rows": [
+    {"country":"China","gw":1202},
+    {"country":"United States","gw":211},
+    {"country":"India","gw":136},
+    {"country":"Germany","gw":107},
+    {"country":"Japan","gw":92},
+    {"country":"Brazil","gw":65},
+    {"country":"Spain","gw":47},
+    {"country":"Australia","gw":42},
+    {"country":"Italy","gw":41},
+    {"country":"South Korea","gw":34},
+    {"country":"France","gw":31},
+    {"country":"Netherlands","gw":26},
+    {"country":"Poland","gw":25},
+    {"country":"Turkey","gw":25},
+    {"country":"United Kingdom","gw":22}
+  ],
+  "mapping": {
+    "label": "country",
+    "value": "gw"
+  },
+  "options": {
+    "sort": "desc",
+    "maxItems": 15
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "sunset",
+    "size": "landscape"
+  }
+}

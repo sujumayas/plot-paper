@@ -1,0 +1,236 @@
+import type { PlotSpec } from "./types";
+
+/** Starter specs for the Studio. Each one teaches a grammar feature. */
+export const SPEC_TEMPLATES: { id: string; spec: PlotSpec }[] = [
+  {
+    id: "bullet",
+    spec: {
+      version: 1,
+      name: "Bullet chart",
+      description: "Actual vs target, with a qualitative range behind each bar",
+      category: "comparison",
+      fields: [
+        { key: "label", label: "Metric", type: "string" },
+        { key: "range", label: "Good range", type: "number" },
+        { key: "value", label: "Actual", type: "number" },
+        { key: "target", label: "Target", type: "number" },
+      ],
+      sample: {
+        title: "Sales reps vs quota",
+        subtitle: "Closed revenue this quarter, $ thousands",
+        source: "CRM",
+        rows: [
+          { label: "Ana", range: 300, value: 262, target: 240 },
+          { label: "Bruno", range: 300, value: 198, target: 240 },
+          { label: "Carla", range: 300, value: 241, target: 240 },
+          { label: "Diego", range: 300, value: 155, target: 240 },
+        ],
+      },
+      y: { type: "band", padding: 0.35 },
+      x: { zero: true },
+      layers: [
+        { mark: "bar", encoding: { y: { field: "label" }, x: { field: "range" } }, style: { fill: "grid", radius: 4 } },
+        { mark: "bar", encoding: { y: { field: "label" }, x: { field: "value" } }, style: { fill: "accent", size: 0.45, radius: 4 } },
+        { mark: "tick", encoding: { y: { field: "label" }, x: { field: "target" } }, style: { stroke: "ink", strokeWidth: 4, size: 0.8 } },
+        { mark: "text", encoding: { y: { field: "label" }, x: { field: "value" }, text: { field: "value" } }, style: { anchor: "start", dx: 10, fontSize: 13 } },
+      ],
+    },
+  },
+  {
+    id: "diverging",
+    spec: {
+      version: 1,
+      name: "Diverging bars",
+      description: "Positive and negative changes in two colors",
+      category: "comparison",
+      fields: [
+        { key: "label", label: "Label", type: "string" },
+        { key: "change", label: "Change", type: "number" },
+      ],
+      sample: {
+        title: "Which prices moved most this year",
+        subtitle: "Change in consumer prices, % year over year",
+        source: "Statistics office (illustrative)",
+        rows: [
+          { label: "Electricity", change: 9.4 },
+          { label: "Food", change: 5.1 },
+          { label: "Rent", change: 3.8 },
+          { label: "Clothing", change: 0.6 },
+          { label: "Phones", change: -3.2 },
+          { label: "TVs", change: -7.9 },
+        ],
+      },
+      y: { type: "band", sort: "value-desc" },
+      layers: [
+        { mark: "bar", filter: { field: "change", op: ">=", value: 0 }, encoding: { y: { field: "label" }, x: { field: "change" } }, style: { fill: "positive" } },
+        { mark: "bar", filter: { field: "change", op: "<", value: 0 }, encoding: { y: { field: "label" }, x: { field: "change" } }, style: { fill: "negative" } },
+        { mark: "rule", encoding: { x: { value: 0 } }, style: { stroke: "axis", strokeWidth: 1.5 } },
+      ],
+    },
+  },
+  {
+    id: "range-band",
+    spec: {
+      version: 1,
+      name: "Range band",
+      description: "A min–max band with an average line — great for weather",
+      category: "trend",
+      fields: [
+        { key: "x", label: "Time", type: "any" },
+        { key: "low", label: "Low", type: "number" },
+        { key: "high", label: "High", type: "number" },
+        { key: "avg", label: "Average", type: "number" },
+      ],
+      sample: {
+        title: "Lima's mild year",
+        subtitle: "Monthly temperature range and average, °C",
+        source: "SENAMHI climate normals (rounded)",
+        rows: [
+          { month: "Jan", low: 20, high: 26, avg: 23 },
+          { month: "Feb", low: 21, high: 27, avg: 24 },
+          { month: "Mar", low: 20, high: 27, avg: 23.5 },
+          { month: "Apr", low: 19, high: 25, avg: 22 },
+          { month: "May", low: 17, high: 23, avg: 20 },
+          { month: "Jun", low: 16, high: 21, avg: 18.5 },
+          { month: "Jul", low: 15, high: 20, avg: 17.5 },
+          { month: "Aug", low: 15, high: 19, avg: 17 },
+          { month: "Sep", low: 15, high: 20, avg: 17.5 },
+          { month: "Oct", low: 16, high: 21, avg: 18.5 },
+          { month: "Nov", low: 17, high: 23, avg: 20 },
+          { month: "Dec", low: 19, high: 25, avg: 22 },
+        ],
+      },
+      y: { zero: false },
+      layers: [
+        { mark: "area", encoding: { x: { field: "x" }, y: { field: "high" }, y2: { field: "low" } }, style: { fill: "accent", opacity: 0.22, strokeWidth: 0, curve: "smooth" } },
+        { mark: "line", encoding: { x: { field: "x" }, y: { field: "avg" } }, style: { stroke: "accent", strokeWidth: 3, curve: "smooth" } },
+        { mark: "point", encoding: { x: { field: "x" }, y: { field: "avg" } }, style: { fill: "accent", size: 4 } },
+      ],
+    },
+  },
+  {
+    id: "strip",
+    spec: {
+      version: 1,
+      name: "Dot strip",
+      description: "Every observation as a dot, grouped by category",
+      category: "distribution",
+      fields: [
+        { key: "group", label: "Group", type: "string" },
+        { key: "value", label: "Value", type: "number" },
+      ],
+      sample: {
+        title: "Salaries overlap more than you think",
+        subtitle: "Annual salary by level, $ thousands",
+        source: "Salary survey (illustrative)",
+        rows: [
+          ...[62, 68, 71, 74, 77, 80, 83, 88, 95].map((v) => ({ group: "Junior", value: v })),
+          ...[82, 88, 92, 97, 101, 105, 112, 118].map((v) => ({ group: "Mid", value: v })),
+          ...[105, 118, 124, 131, 138, 142, 150, 171].map((v) => ({ group: "Senior", value: v })),
+        ],
+      },
+      y: { type: "band", padding: 0.5 },
+      layers: [
+        { mark: "point", encoding: { y: { field: "group" }, x: { field: "value" }, color: { field: "group" } }, style: { size: 8, opacity: 0.7 } },
+        { mark: "tick", encoding: { y: { field: "group" }, x: { field: "value", aggregate: "mean" } }, style: { stroke: "ink", strokeWidth: 3, size: 1 } },
+      ],
+      legend: false,
+    },
+  },
+  {
+    id: "rose",
+    spec: {
+      version: 1,
+      name: "Ring chart",
+      description: "A thin ring of shares with percentage labels",
+      category: "composition",
+      fields: [
+        { key: "label", label: "Category", type: "string" },
+        { key: "value", label: "Value", type: "number" },
+      ],
+      sample: {
+        title: "What our support team spends time on",
+        subtitle: "Share of tickets by topic, last quarter",
+        source: "Helpdesk",
+        rows: [
+          { label: "Billing", value: 34 },
+          { label: "Login issues", value: 26 },
+          { label: "Bugs", value: 21 },
+          { label: "Feature requests", value: 12 },
+          { label: "Other", value: 7 },
+        ],
+      },
+      coord: "polar",
+      layers: [{ mark: "arc", encoding: { theta: { field: "value" }, color: { field: "label" } }, style: { innerRadius: 0.72 } }],
+    },
+  },
+  {
+    id: "target-line",
+    spec: {
+      version: 1,
+      name: "Line vs target",
+      description: "A trend with a dashed target line and labels",
+      category: "trend",
+      fields: [
+        { key: "x", label: "Period", type: "any" },
+        { key: "value", label: "Actual", type: "number" },
+        { key: "target", label: "Target", type: "number" },
+      ],
+      sample: {
+        title: "Weekly active users crossed the goal",
+        subtitle: "Thousands of users",
+        source: "Product analytics",
+        rows: [
+          { week: "W1", value: 31, target: 45 },
+          { week: "W2", value: 34, target: 45 },
+          { week: "W3", value: 33, target: 45 },
+          { week: "W4", value: 39, target: 45 },
+          { week: "W5", value: 42, target: 45 },
+          { week: "W6", value: 47, target: 45 },
+          { week: "W7", value: 51, target: 45 },
+        ],
+      },
+      layers: [
+        { mark: "line", encoding: { x: { field: "x" }, y: { field: "target" } }, style: { stroke: "muted", strokeWidth: 2, dash: [6, 5] } },
+        { mark: "area", encoding: { x: { field: "x" }, y: { field: "value" } }, style: { fill: "accent", opacity: 0.12, strokeWidth: 0, curve: "smooth" } },
+        { mark: "line", encoding: { x: { field: "x" }, y: { field: "value" } }, style: { stroke: "accent", strokeWidth: 3.5, curve: "smooth" } },
+        { mark: "point", encoding: { x: { field: "x" }, y: { field: "value" } }, style: { fill: "accent", size: 5 } },
+        { mark: "text", encoding: { x: { field: "x" }, y: { field: "value" }, text: { field: "value" } }, style: { dy: -18, fontSize: 13 } },
+      ],
+    },
+  },
+  {
+    id: "connected-scatter",
+    spec: {
+      version: 1,
+      name: "Connected scatter",
+      description: "How two measures moved together over time",
+      category: "relationship",
+      fields: [
+        { key: "x", label: "X value", type: "number" },
+        { key: "y", label: "Y value", type: "number" },
+        { key: "label", label: "Point label", type: "string" },
+      ],
+      sample: {
+        title: "Unemployment and inflation took turns",
+        subtitle: "United States, annual averages, %",
+        source: "BLS (rounded)",
+        rows: [
+          { unemployment: 3.7, inflation: 1.8, year: "2019" },
+          { unemployment: 8.1, inflation: 1.2, year: "2020" },
+          { unemployment: 5.4, inflation: 4.7, year: "2021" },
+          { unemployment: 3.6, inflation: 8.0, year: "2022" },
+          { unemployment: 3.6, inflation: 4.1, year: "2023" },
+          { unemployment: 4.0, inflation: 2.9, year: "2024" },
+        ],
+      },
+      x: { title: "Unemployment %", zero: false },
+      y: { title: "Inflation %" },
+      layers: [
+        { mark: "line", order: "data", encoding: { x: { field: "x" }, y: { field: "y" } }, style: { stroke: "axis", strokeWidth: 2, curve: "smooth" } },
+        { mark: "point", encoding: { x: { field: "x" }, y: { field: "y" } }, style: { fill: "accent", size: 7, stroke: "background" } },
+        { mark: "text", encoding: { x: { field: "x" }, y: { field: "y" }, text: { field: "label" } }, style: { anchor: "start", dx: 12, fontSize: 14 } },
+      ],
+    },
+  },
+];

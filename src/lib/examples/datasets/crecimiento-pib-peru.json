@@ -1,0 +1,63 @@
+{
+  "id": "crecimiento-pib-peru",
+  "chartType": "bar",
+  "title": "2020: la peor caída del PIB peruano en más de tres décadas",
+  "subtitle": "Crecimiento anual del PIB real del Perú, %, 2000–2025",
+  "source": "Banco Mundial, Indicadores del Desarrollo Mundial (con datos del INEI y BCRP)",
+  "sourceUrl": "https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG?locations=PE",
+  "note": "La contracción de 2023 se asoció al fenómeno El Niño costero y a la conflictividad social.",
+  "description": "Un cuarto de siglo de crecimiento peruano: el superciclo de materias primas, el golpe de la pandemia y el rebote de 2021.",
+  "tags": [
+    "es",
+    "perú",
+    "economía",
+    "crecimiento"
+  ],
+  "author": "lucia.r",
+  "columns": [
+    "anio",
+    "crecimiento"
+  ],
+  "rows": [
+    {"anio":"2000","crecimiento":2.7},
+    {"anio":"2001","crecimiento":0.6},
+    {"anio":"2002","crecimiento":5.5},
+    {"anio":"2003","crecimiento":4.2},
+    {"anio":"2004","crecimiento":5},
+    {"anio":"2005","crecimiento":6.3},
+    {"anio":"2006","crecimiento":7.5},
+    {"anio":"2007","crecimiento":8.5},
+    {"anio":"2008","crecimiento":9.1},
+    {"anio":"2009","crecimiento":1.1},
+    {"anio":"2010","crecimiento":8.3},
+    {"anio":"2011","crecimiento":6.3},
+    {"anio":"2012","crecimiento":6.1},
+    {"anio":"2013","crecimiento":5.9},
+    {"anio":"2014","crecimiento":2.4},
+    {"anio":"2015","crecimiento":3.3},
+    {"anio":"2016","crecimiento":4},
+    {"anio":"2017","crecimiento":2.5},
+    {"anio":"2018","crecimiento":4},
+    {"anio":"2019","crecimiento":2.2},
+    {"anio":"2020","crecimiento":-10.9},
+    {"anio":"2021","crecimiento":13.4},
+    {"anio":"2022","crecimiento":2.8},
+    {"anio":"2023","crecimiento":-0.4},
+    {"anio":"2024","crecimiento":3.5},
+    {"anio":"2025","crecimiento":3.4}
+  ],
+  "mapping": {
+    "label": "anio",
+    "value": "crecimiento"
+  },
+  "options": {
+    "sort": "none",
+    "colorBy": "sign",
+    "highlight": "none"
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "newsroom",
+    "size": "landscape"
+  }
+}

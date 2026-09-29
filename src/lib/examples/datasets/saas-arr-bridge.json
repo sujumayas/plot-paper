@@ -1,0 +1,42 @@
+{
+  "id": "saas-arr-bridge",
+  "chartType": "waterfall",
+  "title": "New business added $920K of ARR, but churn gave back almost a third of it",
+  "subtitle": "Annual recurring revenue bridge, US$ thousands, FY2025 (illustrative)",
+  "source": "Illustrative data",
+  "sourceUrl": "",
+  "note": "Illustrative example for a mid-stage B2B SaaS company; not real company data.",
+  "description": "A classic ARR bridge: start of year, new logos, expansion, contraction and churn, ending ARR.",
+  "tags": [
+    "business",
+    "saas",
+    "finance",
+    "illustrative"
+  ],
+  "author": "nico.p",
+  "columns": [
+    "step",
+    "arr_k"
+  ],
+  "rows": [
+    {"step":"ARR, Jan 1","arr_k":2400},
+    {"step":"New customers","arr_k":920},
+    {"step":"Expansion","arr_k":410},
+    {"step":"Contraction","arr_k":-130},
+    {"step":"Churn","arr_k":-280}
+  ],
+  "mapping": {
+    "label": "step",
+    "value": "arr_k"
+  },
+  "options": {
+    "startIsTotal": true,
+    "showTotal": true,
+    "totalLabel": "ARR, Dec 31"
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "emerald",
+    "size": "slide"
+  }
+}

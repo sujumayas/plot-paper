@@ -1,0 +1,42 @@
+{
+  "id": "q3-okr-progress",
+  "chartType": "progress",
+  "title": "Two of five key results on track with three weeks left in the quarter",
+  "subtitle": "Product team Q3 2025 key results: current value vs. target (illustrative)",
+  "source": "Illustrative data",
+  "sourceUrl": "",
+  "note": "Illustrative example; units vary by key result (%, count, days).",
+  "description": "Quarterly OKR progress as bars against target, the kind of chart that opens a team review.",
+  "tags": [
+    "business",
+    "okr",
+    "product",
+    "illustrative"
+  ],
+  "author": "camila.t",
+  "columns": [
+    "key_result",
+    "current",
+    "target"
+  ],
+  "rows": [
+    {"key_result":"Activation rate to 45%","current":41,"target":45},
+    {"key_result":"Ship 12 onboarding experiments","current":11,"target":12},
+    {"key_result":"Weekly active teams to 3,000","current":2310,"target":3000},
+    {"key_result":"NPS to 50","current":38,"target":50},
+    {"key_result":"Enterprise pilots signed: 8","current":3,"target":8}
+  ],
+  "mapping": {
+    "label": "key_result",
+    "value": "current",
+    "target": "target"
+  },
+  "options": {
+    "style": "bars"
+  },
+  "style": {
+    "theme": "clean",
+    "palette": "blueprint",
+    "size": "landscape"
+  }
+}

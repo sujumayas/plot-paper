@@ -25,8 +25,12 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Refresh session if expired.
-  await supabase.auth.getUser();
+  // Refresh the session if expired. Never let an auth outage break page loads.
+  try {
+    await supabase.auth.getUser();
+  } catch {
+    /* Supabase unreachable — continue without a session */
+  }
 
   return response;
 }

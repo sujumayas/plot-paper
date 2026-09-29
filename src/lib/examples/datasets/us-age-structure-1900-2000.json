@@ -1,0 +1,55 @@
+{
+  "id": "us-age-structure-1900-2000",
+  "chartType": "grouped",
+  "title": "A century turned America's population pyramid into a pillar",
+  "subtitle": "US population by five-year age group, millions, 1900 vs. 2000",
+  "source": "IPUMS USA (US Census microdata) via vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/population.json",
+  "note": "Includes both sexes.",
+  "description": "In 1900 each age group was smaller than the one before it; by 2000 the baby boomers formed a bulge in middle age.",
+  "tags": [
+    "demographics",
+    "usa",
+    "history"
+  ],
+  "author": "priya.n",
+  "columns": [
+    "age_group",
+    "Census 1900",
+    "Census 2000"
+  ],
+  "rows": [
+    {"age_group":"0–4","Census 1900":9.21,"Census 2000":19.05},
+    {"age_group":"5–9","Census 1900":8.86,"Census 2000":20.62},
+    {"age_group":"10–14","Census 1900":8.06,"Census 2000":20.59},
+    {"age_group":"15–19","Census 1900":7.58,"Census 2000":19.93},
+    {"age_group":"20–24","Census 1900":7.45,"Census 2000":19.06},
+    {"age_group":"25–29","Census 1900":6.63,"Census 2000":19.18},
+    {"age_group":"30–34","Census 1900":5.58,"Census 2000":20.33},
+    {"age_group":"35–39","Census 1900":4.98,"Census 2000":23.11},
+    {"age_group":"40–44","Census 1900":4.27,"Census 2000":22.81},
+    {"age_group":"45–49","Census 1900":3.52,"Census 2000":20.19},
+    {"age_group":"50–54","Census 1900":2.98,"Census 2000":17.42},
+    {"age_group":"55–59","Census 1900":2.23,"Census 2000":13.38},
+    {"age_group":"60–64","Census 1900":1.8,"Census 2000":10.79},
+    {"age_group":"65–69","Census 1900":1.31,"Census 2000":9.26},
+    {"age_group":"70–74","Census 1900":0.89,"Census 2000":8.98},
+    {"age_group":"75–79","Census 1900":0.53,"Census 2000":7.27},
+    {"age_group":"80–84","Census 1900":0.26,"Census 2000":5.12},
+    {"age_group":"85–89","Census 1900":0.09,"Census 2000":2.95},
+    {"age_group":"90+","Census 1900":0.04,"Census 2000":1.4}
+  ],
+  "mapping": {
+    "label": "age_group",
+    "series": [
+      "Census 1900",
+      "Census 2000"
+    ]
+  },
+  "options": {},
+  "style": {
+    "theme": "paper",
+    "palette": "mono",
+    "size": "landscape"
+  }
+}

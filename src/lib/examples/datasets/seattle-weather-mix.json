@@ -1,0 +1,39 @@
+{
+  "id": "seattle-weather-mix",
+  "chartType": "donut",
+  "title": "Seattle's days split almost evenly between rain and sun",
+  "subtitle": "Days by dominant weather type, Seattle, 2012–2015 (1,461 days)",
+  "source": "NOAA NCEI via vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/seattle-weather.csv",
+  "note": "Weather type is the dataset's single daily classification.",
+  "description": "Seattle's reputation, quantified: rain or drizzle was the dominant weather on 48% of days, but sunny days were nearly as common.",
+  "tags": [
+    "weather",
+    "composition"
+  ],
+  "author": "ana.s",
+  "columns": [
+    "weather",
+    "days"
+  ],
+  "rows": [
+    {"weather":"Rain","days":641},
+    {"weather":"Sun","days":640},
+    {"weather":"Fog","days":101},
+    {"weather":"Drizzle","days":53},
+    {"weather":"Snow","days":26}
+  ],
+  "mapping": {
+    "label": "weather",
+    "value": "days"
+  },
+  "options": {
+    "centerText": "1,461 days",
+    "hole": 0.6
+  },
+  "style": {
+    "theme": "pastel",
+    "palette": "pastel",
+    "size": "square"
+  }
+}

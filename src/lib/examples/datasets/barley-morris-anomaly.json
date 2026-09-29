@@ -1,0 +1,42 @@
+{
+  "id": "barley-morris-anomaly",
+  "chartType": "grouped",
+  "title": "Morris is the only site where 1932 beat 1931 — a likely data mix-up",
+  "subtitle": "Average barley yield across 10 varieties, bushels per acre, six Minnesota experiment stations",
+  "source": "Immer et al. (1934) via William Cleveland's Visualizing Data and vega-datasets",
+  "sourceUrl": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/barley.json",
+  "note": "Cleveland (1993) argued the Morris years were probably swapped in the original records.",
+  "description": "The famous barley anomaly that William Cleveland spotted with a simple dot plot, here as grouped columns.",
+  "tags": [
+    "agriculture",
+    "classic-dataset",
+    "comparison"
+  ],
+  "author": "rachel.b",
+  "columns": [
+    "site",
+    "Harvest 1931",
+    "Harvest 1932"
+  ],
+  "rows": [
+    {"site":"University Farm","Harvest 1931":35.8,"Harvest 1932":29.5},
+    {"site":"Waseca","Harvest 1931":54.3,"Harvest 1932":41.9},
+    {"site":"Morris","Harvest 1931":29.3,"Harvest 1932":41.5},
+    {"site":"Crookston","Harvest 1931":43.7,"Harvest 1932":31.2},
+    {"site":"Grand Rapids","Harvest 1931":29.1,"Harvest 1932":20.8},
+    {"site":"Duluth","Harvest 1931":30.3,"Harvest 1932":25.7}
+  ],
+  "mapping": {
+    "label": "site",
+    "series": [
+      "Harvest 1931",
+      "Harvest 1932"
+    ]
+  },
+  "options": {},
+  "style": {
+    "theme": "paper",
+    "palette": "forest",
+    "size": "landscape"
+  }
+}

@@ -3,7 +3,10 @@
  * Regenerate with: `supabase gen types typescript --project-id <id> --schema public > src/lib/supabase/types.ts`
  */
 
-import type { VizColumn, VizRow } from "@/lib/viz/types";
+import type { DataRow } from "@/lib/viz/types";
+
+type VizColumn = { name: string; type: "string" | "number" };
+type VizRow = DataRow;
 
 type ProfileRowShape = {
   id: string;
@@ -30,6 +33,7 @@ type VizTypeRowShape = {
   is_public: boolean;
   source_prompt: string | null;
   source_ref_url: string | null;
+  spec: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -46,6 +50,7 @@ type VizTypeInsertShape = {
   is_public?: boolean;
   source_prompt?: string | null;
   source_ref_url?: string | null;
+  spec?: Record<string, unknown> | null;
   created_at?: string;
 };
 
@@ -53,7 +58,9 @@ type GraphRowShape = {
   id: string;
   title: string;
   description: string | null;
-  viz_type_id: string;
+  viz_type_id: string | null;
+  chart_type: string | null;
+  config: Record<string, unknown>;
   data: VizRow[];
   tags: string[];
   author_id: string;
@@ -71,7 +78,9 @@ type GraphInsertShape = {
   id?: string;
   title: string;
   description?: string | null;
-  viz_type_id: string;
+  viz_type_id?: string | null;
+  chart_type?: string | null;
+  config?: Record<string, unknown>;
   data: VizRow[];
   tags?: string[];
   author_id: string;
@@ -169,6 +178,4 @@ export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 export type GraphInsert = Database["public"]["Tables"]["graphs"]["Insert"];
 export type VizTypeInsert = Database["public"]["Tables"]["viz_types"]["Insert"];
 
-export type GraphWithVizType = GraphRow & {
-  viz_types: VizTypeRow;
-};
+
