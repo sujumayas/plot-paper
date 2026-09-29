@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { IconAlert, IconRedo, IconUndo } from "@/components/icons";
@@ -12,7 +12,7 @@ import { exampleToDoc, type RawExample } from "@/lib/examples";
 import { EXAMPLE_LOADERS } from "@/lib/examples/loaders";
 import { useI18n } from "@/lib/i18n";
 import { decodeDoc } from "@/lib/share";
-import { KEYS, readJSON, writeJSON } from "@/lib/storage";
+import { KEYS, readJSON, removeKey, writeJSON } from "@/lib/storage";
 import { takeIncoming } from "@/lib/incoming";
 import { barChart } from "@/lib/viz/charts/bars";
 import { autoMap, inferColumns, parseJSONRows } from "@/lib/viz/data";
@@ -50,6 +50,22 @@ export function Builder() {
   const [ready, setReady] = useState(false);
   const storageWarned = useRef(false);
   const loadStarted = useRef(false);
+  // The draft a link replaced is kept in KEYS.docPrev (with a Restore notice). While
+  // the saved draft is an unedited link (KEYS.docPristine), opening another link
+  // doesn't replace that backup, so a chain of links never loses real work.
+  const pristineIncoming = useRef<ChartDoc | null>(null);
+  const [prevDraft, setPrevDraft] = useState<ChartDoc | null>(null);
+  const docRef = useRef(doc);
+  docRef.current = doc;
+
+  const keepPrevious = useCallback((previous: ChartDoc) => {
+    writeJSON(KEYS.docPrev, previous);
+    setPrevDraft(previous);
+  }, []);
+  const clearPrevious = useCallback(() => {
+    removeKey(KEYS.docPrev);
+    setPrevDraft(null);
+  }, []);
 
   const update = useCallback((fn: (d: ChartDoc) => ChartDoc, coalesce?: string) => history.set(fn, { coalesce }), [history]);
 
@@ -79,7 +95,9 @@ export function Builder() {
           incoming = handoff.doc;
           if (handoff.spec && !registry.get(incoming.chartType)) {
             // A community chart made with a custom type: install the type locally.
-            const item = registry.upsert(handoff.spec, { origin: "import" });
+            // Reuse an identical type from an earlier remix instead of installing a copy.
+            const same = registry.custom.find((c) => JSON.stringify(c.spec) === JSON.stringify(handoff.spec));
+            const item = same ?? registry.upsert(handoff.spec, { origin: "import" });
             incoming = { ...incoming, chartType: CUSTOM_PREFIX + item.id };
           }
           message = t("builder.loadedExample", { title: incoming.title || l(registry.get(incoming.chartType)?.name ?? barChart.name) });
@@ -101,10 +119,19 @@ export function Builder() {
 
       if (saved) history.reset(saved);
       if (incoming) {
+        pristineIncoming.current = incoming;
         if (saved) {
           history.set(incoming);
+          if (!readJSON(KEYS.docPristine, false)) keepPrevious(saved);
+          else {
+            const prev = readJSON<ChartDoc | null>(KEYS.docPrev, null);
+            if (prev && typeof prev === "object" && Array.isArray(prev.data)) setPrevDraft(sanitizeDoc(prev));
+          }
           message = message ? `${message}. ${t("builder.undoRestores")}` : t("builder.undoRestores");
         } else history.reset(incoming);
+      } else {
+        const prev = readJSON<ChartDoc | null>(KEYS.docPrev, null);
+        if (prev && typeof prev === "object" && Array.isArray(prev.data)) setPrevDraft(sanitizeDoc(prev));
       }
       if (message) toast(message);
       setReady(true);
@@ -124,18 +151,22 @@ export function Builder() {
         toast(t("builder.shareInvalid"), "error");
         return;
       }
+      if (docRef.current !== pristineIncoming.current) keepPrevious(docRef.current);
+      pristineIncoming.current = shared;
       history.set(shared);
       toast(`${t("builder.loadedShare")}. ${t("builder.undoRestores")}`);
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, [ready, history, toast, t]);
+  }, [ready, history, toast, t, keepPrevious]);
 
   // ── Autosave
   useEffect(() => {
     if (!ready) return;
     const id = setTimeout(() => {
       const ok = writeJSON(KEYS.doc, doc);
+      if (doc === pristineIncoming.current) writeJSON(KEYS.docPristine, true);
+      else removeKey(KEYS.docPristine);
       if (!ok && !storageWarned.current) {
         storageWarned.current = true;
         toast(t("builder.storageFull"), "error");
@@ -235,6 +266,26 @@ export function Builder() {
         onReset={() => {
           if (window.confirm(t("builder.resetConfirm"))) history.reset(defaultDoc(def, locale));
         }}
+        notice={
+          prevDraft && (
+            <div className="alert" role="status" data-testid="prev-draft">
+              <span>{t("builder.prevKept", { title: prevDraft.title || l(registry.get(prevDraft.chartType)?.name ?? barChart.name) })}</span>
+              <button
+                className="btn sm"
+                type="button"
+                onClick={() => {
+                  history.set(prevDraft);
+                  clearPrevious();
+                }}
+              >
+                {t("builder.prevRestore")}
+              </button>
+              <button className="btn ghost sm" type="button" onClick={clearPrevious}>
+                {t("builder.prevDismiss")}
+              </button>
+            </div>
+          )
+        }
       />
       <aside className="inspector" aria-label={l(def.name)}>
         <div className="tabs" role="tablist">
@@ -265,6 +316,7 @@ function Canvas({
   onImport,
   onUseSample,
   onReset,
+  notice,
 }: {
   doc: ChartDoc;
   def: ChartDefinition;
@@ -276,6 +328,7 @@ function Canvas({
   onImport: (f: File) => void;
   onUseSample: () => void;
   onReset: () => void;
+  notice?: ReactNode;
 }) {
   const { t, l } = useI18n();
   // Rendering big datasets can take a moment; keep typing and clicks responsive.
@@ -329,8 +382,9 @@ function Canvas({
         <PublishButton doc={doc} def={def} />
         <ExportMenu doc={doc} def={def} onImport={onImport} />
       </div>
-      {issueText.length > 0 && (
+      {(issueText.length > 0 || notice) && (
         <div className="stage-issues" style={{ paddingTop: 12 }}>
+          {notice}
           {issueText.map((m, i) => (
             <div key={i} className="alert warn" role="status">
               <IconAlert style={{ width: 18, height: 18, flex: "none" }} />

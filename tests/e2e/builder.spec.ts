@@ -128,6 +128,34 @@ test.describe("links never destroy the saved draft", () => {
     await expect(await posterSvg(page)).toContainText("My precious draft");
   });
 
+  test("the replaced draft survives reloads and chains of links until restored", async ({ page }) => {
+    await openBuilder(page);
+    await typeTitle(page, "Real work");
+    await openBuilder(page, "?type=pie");
+    await page.waitForTimeout(700); // the untouched pie gets autosaved
+    await openBuilder(page, "?type=donut"); // a second link must not replace the backup
+    await page.reload();
+    await expect(page.locator(".builder[data-ready=true]")).toBeVisible();
+    const notice = page.getByTestId("prev-draft");
+    await expect(notice).toContainText("Real work");
+    await notice.getByRole("button", { name: "Restore it" }).click();
+    await expect(await posterSvg(page)).toContainText("Real work");
+    await expect(notice).toHaveCount(0);
+    await page.waitForTimeout(700);
+    await page.reload();
+    await expect(await posterSvg(page)).toContainText("Real work");
+    await expect(page.getByTestId("prev-draft")).toHaveCount(0);
+  });
+
+  test("an example opened with no earlier draft survives a reload", async ({ page }) => {
+    await openBuilder(page, "?example=seattle-temperature-by-month");
+    const title = await (await posterSvg(page)).getAttribute("aria-label");
+    await page.waitForTimeout(700);
+    await page.reload();
+    await expect(page.locator(".builder[data-ready=true]")).toBeVisible();
+    await expect(await posterSvg(page)).toHaveAttribute("aria-label", title!);
+  });
+
   test("reloading after opening an example keeps later edits", async ({ page }) => {
     await openBuilder(page, "?example=seattle-temperature-by-month");
     await expect(page).toHaveURL(/\/build$/);

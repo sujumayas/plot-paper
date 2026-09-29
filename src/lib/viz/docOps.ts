@@ -1,4 +1,4 @@
-import { autoMap, coerceRows, inferType, parseNumber, toCSV } from "./data";
+import { autoMap, coerceRows, inferType, parseNumber, safeKey, toCSV } from "./data";
 import type { Cell, ChartDefinition, ChartDoc, ColumnInfo, DataRow, Mapping } from "./types";
 
 /** Pure, immutable operations on a chart document (used by the editor + tests). */
@@ -36,7 +36,8 @@ export function deleteRow(doc: ChartDoc, index: number): ChartDoc {
   return { ...doc, data: doc.data.filter((_, i) => i !== index) };
 }
 
-export function uniqueColumnName(doc: ChartDoc, base: string): string {
+export function uniqueColumnName(doc: ChartDoc, raw: string): string {
+  const base = safeKey(raw);
   const names = new Set(doc.columns.map((c) => c.name));
   if (!names.has(base)) return base;
   let i = 2;
@@ -80,7 +81,7 @@ export function deleteColumn(doc: ChartDoc, name: string): ChartDoc {
 }
 
 export function renameColumn(doc: ChartDoc, from: string, toRaw: string): ChartDoc {
-  const to = toRaw.trim();
+  const to = safeKey(toRaw.trim());
   if (!to || to === from) return doc;
   if (doc.columns.some((c) => c.name === to)) return doc;
   return {

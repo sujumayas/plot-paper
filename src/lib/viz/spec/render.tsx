@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { parseDate, parseNumber } from "../data";
+import { dateParserFor, parseDate, parseNumber } from "../data";
 import { formatPercent } from "../format";
 import { Bar, CategoryLabels, EmptyState, HaloText, YAxis, arcPath, fs, layoutCategoryLabels, linePath } from "../parts";
-import { band, linear, logScale, mixHex, readableOn, type BandScale, type LinearScale } from "../scale";
+import { band, linear, logScale, maxOf, minOf, mixHex, readableOn, type BandScale, type LinearScale } from "../scale";
 import { pretty, textWidth, truncate } from "../text";
 import { G } from "../charts/glyphs";
 import { dateTicks } from "../charts/lines";
@@ -88,10 +88,10 @@ function layerData(spec: PlotSpec, layer: Layer, recs: Rec[], c: RenderContext):
             r[f] = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
             break;
           case "min":
-            r[f] = vals.length ? Math.min(...vals) : null;
+            r[f] = vals.length ? minOf(vals) : null;
             break;
           case "max":
-            r[f] = vals.length ? Math.max(...vals) : null;
+            r[f] = vals.length ? maxOf(vals) : null;
             break;
           default:
             r[f] = vals.reduce((a, b) => a + b, 0);
@@ -114,7 +114,7 @@ type AxisScale =
   | { kind: "linear" | "log"; scale: LinearScale; pos: (v: Val) => number | null; width: 0 }
   | { kind: "time"; lo: number; hi: number; pos: (v: Val) => number | null; width: 0; r0: number; r1: number };
 
-type AxisInfo = { type: NonNullable<AxisSpec["type"]>; values: Val[]; domain: string[]; nums: number[] };
+type AxisInfo = { type: NonNullable<AxisSpec["type"]>; values: Val[]; domain: string[]; nums: number[]; toDate: (v: Val) => number | null };
 
 function inferAxis(spec: PlotSpec, which: "x" | "y", prepared: { layer: Layer; data: Rec[] }[], stacks: Map<Layer, StackInfo>): AxisInfo {
   const axisSpec = spec[which] ?? {};
@@ -157,8 +157,12 @@ function inferAxis(spec: PlotSpec, which: "x" | "y", prepared: { layer: Layer; d
     }
   }
   if (type === "linear" || type === "log") nums.push(...present.map((v) => parseNumber(v)!).filter((n) => n !== null));
-  if (type === "time") nums.push(...present.map((v) => parseDate(v as string)).filter((n): n is number => n !== null));
-  return { type, values, domain, nums };
+  const toDate = dateParserFor(present);
+  if (type === "time") for (const v of present) {
+    const t = toDate(v as string);
+    if (t !== null) nums.push(t);
+  }
+  return { type, values, domain, nums, toDate };
 }
 
 type StackInfo = { valueAxis: "x" | "y"; extent: number[]; base: Map<Rec, [number, number]> };
@@ -329,8 +333,8 @@ export function renderSpec(spec: PlotSpec, c: RenderContext): ReactNode {
       return { kind: "log", scale: s, pos: (v) => (parseNumber(v) !== null && parseNumber(v)! > 0 ? s(parseNumber(v)!) : null), width: 0 };
     }
     if (info.type === "time") {
-      const lo = Math.min(...info.nums);
-      const hi = Math.max(...info.nums);
+      const lo = minOf(info.nums);
+      const hi = maxOf(info.nums);
       const [r0, r1] = range;
       return {
         kind: "time",
@@ -339,7 +343,7 @@ export function renderSpec(spec: PlotSpec, c: RenderContext): ReactNode {
         r0,
         r1,
         pos: (v) => {
-          const t = typeof v === "number" ? v : parseDate(v);
+          const t = typeof v === "number" ? v : info.toDate(v);
           return t === null ? null : r0 + ((t - lo) / (hi - lo || 1)) * (r1 - r0);
         },
         width: 0,

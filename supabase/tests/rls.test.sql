@@ -103,6 +103,60 @@ begin
   assert (select count(*) from public.likes) = 0, 'likes are private';
 end $$;
 
+-- ── Forks of a graph that uses its author's private viz_type stay editable ──
+reset role;
+insert into public.viz_types (id, slug, name, category, base_renderer_id, columns, owner_id, is_public)
+values ('e5555555-5555-4555-8555-555555555555', 'alices', 'Alice''s type', 'Custom', 'custom:alices', '[]', :alice, false);
+set role authenticated;
+select set_config('request.jwt.claim.sub', :alice, false);
+insert into public.graphs (id, title, viz_type_id, data, author_id, is_published)
+values ('f6666666-6666-4666-8666-666666666666', 'Uses private type', 'e5555555-5555-4555-8555-555555555555', '[]', :alice, true);
+-- Alice can unlike after unpublishing.
+do $$
+begin
+  assert public.toggle_like('f6666666-6666-4666-8666-666666666666') = true, 'like';
+  update public.graphs set is_published = false where id = 'f6666666-6666-4666-8666-666666666666';
+  assert public.toggle_like('f6666666-6666-4666-8666-666666666666') = false, 'unlike an unpublished graph';
+  begin
+    perform public.toggle_like('f6666666-6666-4666-8666-666666666666');
+    raise exception 'liking an unpublished graph should fail';
+  exception when raise_exception then
+    if sqlerrm <> 'graph not found' then raise; end if;
+  end;
+  update public.graphs set is_published = true where id = 'f6666666-6666-4666-8666-666666666666';
+end $$;
+select set_config('request.jwt.claim.sub', :bob, false);
+do $$
+declare fork uuid; n int;
+begin
+  fork := public.fork_graph('f6666666-6666-4666-8666-666666666666');
+  update public.graphs set title = 'My fork', is_published = true where id = fork;
+  get diagnostics n = row_count;
+  assert n = 1, 'fork is editable';
+  -- …he can point it at his own type or none, but not (back) at Alice's private one.
+  update public.graphs set viz_type_id = 'c3333333-3333-4333-8333-333333333333' where id = fork;
+  begin
+    update public.graphs set viz_type_id = 'e5555555-5555-4555-8555-555555555555' where id = fork;
+    raise exception 'pointing a fork at a private type should fail';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- ── Older oversized rows keep working with the RPCs ───────────────────────
+reset role;
+alter table public.graphs disable trigger graphs_protect_columns;
+insert into public.graphs (id, title, data, author_id, is_published)
+select 'a7777777-7777-4777-8777-777777777777', 'Legacy big', jsonb_agg(jsonb_build_object('i', i)), :alice, true
+from generate_series(1, 6000) i;
+alter table public.graphs enable trigger graphs_protect_columns;
+set role anon;
+select public.increment_views('a7777777-7777-4777-8777-777777777777');
+reset role;
+do $$
+begin
+  assert (select views from public.graphs where id = 'a7777777-7777-4777-8777-777777777777') = 1, 'views counted on a legacy row';
+end $$;
+
 -- ── Anonymous ─────────────────────────────────────────────────────────────
 reset role;
 set role anon;

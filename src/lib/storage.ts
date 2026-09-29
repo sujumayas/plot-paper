@@ -2,6 +2,10 @@
 
 export const KEYS = {
   doc: "pp-doc-v2",
+  /** The draft that an opened link/example replaced, until restored or dismissed. */
+  docPrev: "pp-doc-prev-v1",
+  /** Set while the saved draft is a link/example the user hasn't edited yet. */
+  docPristine: "pp-doc-pristine-v1",
   customTypes: "pp-custom-types-v1",
   myCharts: "pp-my-charts-v1",
   studioDraft: "pp-studio-draft-v1",

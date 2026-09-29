@@ -244,6 +244,7 @@ const clampSize = (v: number) => Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.roun
  */
 function SizeInput({ id, value, onCommit }: { id: string; value: number; onCommit: (v: number) => void }) {
   const [draft, setDraft] = useState<string | null>(null);
+  const [initial, setInitial] = useState(value);
   const finish = () => {
     const n = Number(draft);
     if (draft !== null && draft.trim() !== "" && Number.isFinite(n) && clampSize(n) !== value) onCommit(clampSize(n));
@@ -258,6 +259,7 @@ function SizeInput({ id, value, onCommit }: { id: string; value: number; onCommi
       min={MIN_SIZE}
       max={MAX_SIZE}
       value={draft ?? value}
+      onFocus={() => setInitial(value)}
       onChange={(e) => {
         setDraft(e.target.value);
         const n = Number(e.target.value);
@@ -266,7 +268,11 @@ function SizeInput({ id, value, onCommit }: { id: string; value: number; onCommi
       onBlur={finish}
       onKeyDown={(e) => {
         if (e.key === "Enter") finish();
-        else if (e.key === "Escape") setDraft(null);
+        else if (e.key === "Escape") {
+          // Undo anything applied live while typing.
+          if (value !== initial) onCommit(initial);
+          setDraft(null);
+        }
       }}
     />
   );

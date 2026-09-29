@@ -6,8 +6,10 @@
 --    the service role — never directly by a signed-in or anonymous API caller.
 -- 2. likes rows are read-only for their owner; they change only through toggle_like,
 --    so the counter on graphs can't drift from the rows.
--- 3. A graph can only reference a viz_type its author owns or that is public.
--- 4. At most 5,000 data rows per graph (matches the app's publish limit).
+-- 3. A graph can only point at a viz_type its author owns or that is public
+--    (checked when viz_type_id is set or changed, so forks made by fork_graph stay editable).
+-- 4. At most 5,000 data rows per graph (matches the app's publish limit), checked
+--    only when data is written, so counters on older rows keep working.
 
 -- 1 ─────────────────────────────────────────────────────────────────────────
 create or replace function public.protect_graph_columns()
@@ -16,10 +18,28 @@ language plpgsql
 set search_path = public
 as $$
 begin
+  -- 4: data size, for every caller, whenever data is written.
+  if tg_op = 'INSERT' or new.data is distinct from old.data then
+    if jsonb_typeof(new.data) <> 'array' or jsonb_array_length(new.data) > 5000 then
+      raise exception 'graphs.data must be an array of at most 5000 rows'
+        using errcode = 'check_violation';
+    end if;
+  end if;
+
   -- Direct API calls run as "anon"/"authenticated"; RPCs (security definer) and
   -- the service role run as other roles and are trusted.
   if current_user not in ('anon', 'authenticated') then
     return new;
+  end if;
+
+  -- 3: only public or own viz types, when the reference is set or changed.
+  if new.viz_type_id is not null
+     and (tg_op = 'INSERT' or new.viz_type_id is distinct from old.viz_type_id)
+     and not exists (
+       select 1 from public.viz_types v
+       where v.id = new.viz_type_id and (v.is_public or v.owner_id = auth.uid())
+     ) then
+    raise exception 'viz type not found' using errcode = 'insufficient_privilege';
   end if;
 
   if tg_op = 'INSERT' then
@@ -66,15 +86,16 @@ begin
   if auth.uid() is null then
     raise exception 'unauthenticated';
   end if;
-  if not exists (select 1 from public.graphs g where g.id = toggle_like.graph_id and g.is_published) then
-    raise exception 'graph not found';
-  end if;
   delete from public.likes
     where user_id = auth.uid() and likes.graph_id = toggle_like.graph_id
     returning true into existed;
   if existed then
     update public.graphs set likes = greatest(likes - 1, 0) where id = toggle_like.graph_id;
     return false;
+  end if;
+  -- New likes only for published graphs (unliking always works).
+  if not exists (select 1 from public.graphs g where g.id = toggle_like.graph_id and g.is_published) then
+    raise exception 'graph not found';
   end if;
   insert into public.likes(user_id, graph_id) values (auth.uid(), toggle_like.graph_id);
   update public.graphs set likes = likes + 1 where id = toggle_like.graph_id;
@@ -85,34 +106,15 @@ $$;
 grant execute on function public.toggle_like(uuid) to authenticated;
 
 -- 3 ─────────────────────────────────────────────────────────────────────────
+-- (enforced in protect_graph_columns above; the policies only check authorship)
 drop policy if exists "graphs_insert_auth" on public.graphs;
 create policy "graphs_insert_auth" on public.graphs for insert to authenticated
-  with check (
-    author_id = auth.uid()
-    and (
-      viz_type_id is null
-      or exists (
-        select 1 from public.viz_types v
-        where v.id = viz_type_id and (v.is_public or v.owner_id = auth.uid())
-      )
-    )
-  );
-
+  with check (author_id = auth.uid());
 drop policy if exists "graphs_update_own" on public.graphs;
 create policy "graphs_update_own" on public.graphs for update to authenticated
-  using (author_id = auth.uid())
-  with check (
-    author_id = auth.uid()
-    and (
-      viz_type_id is null
-      or exists (
-        select 1 from public.viz_types v
-        where v.id = viz_type_id and (v.is_public or v.owner_id = auth.uid())
-      )
-    )
-  );
+  using (author_id = auth.uid()) with check (author_id = auth.uid());
 
 -- 4 ─────────────────────────────────────────────────────────────────────────
+-- (enforced in protect_graph_columns above; an earlier draft of this migration
+-- used a CHECK constraint, which also blocked counter updates on older rows)
 alter table public.graphs drop constraint if exists graphs_data_rows;
-alter table public.graphs add constraint graphs_data_rows
-  check (jsonb_typeof(data) = 'array' and jsonb_array_length(data) <= 5000) not valid;

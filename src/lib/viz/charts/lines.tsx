@@ -1,5 +1,5 @@
-import { parseDate, parseNumber } from "../data";
-import { linear, point, tickStep } from "../scale";
+import { dateParserFor, parseNumber } from "../data";
+import { linear, maxOf, minOf, point, tickStep } from "../scale";
 import { CategoryLabels, EmptyState, HaloText, YAxis, fs, layoutCategoryLabels, linePath, tickLabelWidth } from "../parts";
 import { pretty, textWidth, truncate } from "../text";
 import type { ChartDefinition, LegendItem, RenderContext } from "../types";
@@ -70,7 +70,8 @@ export function lineData(c: RenderContext): LineData | null {
     order.sort((a, b) => nums[a]! - nums[b]!);
     x = { kind: "number", values: order.map((i) => nums[i]!), year: isYear };
   } else {
-    const dates = keys.map((k) => (/\d/.test(k) && /[-/]/.test(k) ? parseDate(k) : null));
+    const toDate = dateParserFor(keys);
+    const dates = keys.map((k) => (/\d/.test(k) && /[-/]/.test(k) ? toDate(k) : null));
     if (keys.length > 1 && dates.every((d) => d !== null)) {
       order.sort((a, b) => dates[a]! - dates[b]!);
       x = { kind: "date", values: order.map((i) => dates[i]!) };
@@ -154,8 +155,8 @@ function renderLines(c: RenderContext, mode: "line" | "area") {
   const all = plotted.flat().filter((v): v is number => v !== null);
   if (!all.length) return <EmptyState c={c} message="No numeric values" />;
   const zeroOpt = c.opt("yZero", "auto");
-  const min = Math.min(...all);
-  const max = Math.max(...all);
+  const min = minOf(all);
+  const max = maxOf(all);
   const zero = mode === "area" || zeroOpt === "yes" || (zeroOpt === "auto" && (min <= 0 || min / (max || 1) < 0.45));
 
   // End labels on the right.

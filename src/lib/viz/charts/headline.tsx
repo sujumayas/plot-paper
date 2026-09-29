@@ -1,4 +1,4 @@
-import { parseDate } from "../data";
+import { dateParserFor, parseDate } from "../data";
 import { band, mixHex, readableOn } from "../scale";
 import { EmptyState, arcPath, fs } from "../parts";
 import { textWidth, truncate, wrapText } from "../text";
@@ -409,8 +409,9 @@ export const calendarChart: ChartDefinition = {
     const dateCol = c.col("date");
     if (!dateCol) return null;
     const byDay = new Map<number, number>();
+    const toDate = dateParserFor(c.rows.map((r) => r[dateCol]));
     for (const r of c.rows) {
-      const t = parseDate(r[dateCol] as string | number | null);
+      const t = toDate(r[dateCol] as string | number | null);
       const v = c.num(r, "value");
       if (t === null || v === null) continue;
       const day = Math.floor(t / DAY);

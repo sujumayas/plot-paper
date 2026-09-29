@@ -423,10 +423,12 @@ const idOrNull = (v: unknown) => (typeof v === "string" && v.length > 0 && v.len
 const oneOf = <T extends string>(v: unknown, allowed: readonly T[], fallback: T): T => (allowed.includes(v as T) ? (v as T) : fallback);
 const bool = (v: unknown, fallback: boolean) => (typeof v === "boolean" ? v : fallback);
 
+const MAX_CELL = 10_000;
+
 function sanitizeCell(v: unknown): DataRow[string] {
   if (v === null || v === undefined) return null;
   if (typeof v === "number") return Number.isFinite(v) ? v : null;
-  if (typeof v === "string") return v.slice(0, MAX_TEXT);
+  if (typeof v === "string") return v.slice(0, MAX_CELL);
   if (typeof v === "boolean") return String(v);
   return null;
 }
@@ -456,7 +458,7 @@ export function sanitizeDoc(input: ChartDoc): ChartDoc {
     labels: bool(st.labels, base.labels),
     legend: oneOf(st.legend, ["top", "bottom", "none"] as const, base.legend),
     titleAlign: oneOf(st.titleAlign, ["left", "center"] as const, base.titleAlign),
-    corners: Math.min(24, Math.max(0, Number(st.corners) || 0)),
+    corners: st.corners === undefined || st.corners === null || !Number.isFinite(Number(st.corners)) ? base.corners : Math.min(24, Math.max(0, Number(st.corners))),
     number: {
       decimals: nf.decimals === null || nf.decimals === undefined || !Number.isFinite(decimals) ? null : Math.min(8, Math.max(0, Math.round(decimals))),
       compact: bool(nf.compact, base.number.compact),
@@ -483,7 +485,7 @@ export function sanitizeDoc(input: ChartDoc): ChartDoc {
     for (const c of doc.columns.slice(0, MAX_COLUMNS)) {
       if (!isPlainObject(c) || typeof c.name !== "string" || !c.name || seen.has(c.name) || RESERVED_KEYS.has(c.name)) continue;
       seen.add(c.name);
-      columns.push({ name: c.name.slice(0, 200), type: oneOf(c.type, ["string", "number", "date"] as const, "string") });
+      columns.push({ name: c.name, type: oneOf(c.type, ["string", "number", "date"] as const, "string") });
     }
   }
 

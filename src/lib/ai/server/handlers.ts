@@ -186,8 +186,10 @@ export async function handleSpec(req: Request, deps: Deps): Promise<Response> {
     let raw = await provider.json({ system: SPEC_SYSTEM, text, image, schema: SPEC_SCHEMA as unknown as Record<string, unknown>, task: "spec", meta });
     let { spec, notes } = aiOutputToSpec((raw ?? {}) as Record<string, unknown>);
     let v = validateSpec(spec);
-    if (!v.spec && deps.limiter.take(key) === 0) {
+    if (!v.spec) {
       // One repair round (a second upstream call, so it costs a second token): send the errors back.
+      const wait = deps.limiter.take(key);
+      if (wait > 0) throw rateLimited(wait);
       const repair = `This PlotSpec failed validation. Fix every error and return the corrected spec.\nErrors:\n- ${v.errors.slice(0, 20).join("\n- ")}\nSpec:\n${JSON.stringify(spec).slice(0, 20_000)}\nOriginal request: ${prompt}`;
       raw = await provider.json({ system: SPEC_SYSTEM, text: repair, schema: SPEC_SCHEMA as unknown as Record<string, unknown>, task: "spec", meta: { ...meta, current: null } });
       ({ spec, notes } = aiOutputToSpec((raw ?? {}) as Record<string, unknown>));

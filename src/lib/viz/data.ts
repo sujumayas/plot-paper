@@ -64,7 +64,7 @@ export function parseNumber(v: Cell | boolean, decimal?: "." | ","): number | nu
 }
 
 const CURRENCY_CODES =
-  "USD|EUR|GBP|JPY|CNY|CHF|CAD|AUD|NZD|HKD|SGD|INR|KRW|RUB|TRY|ZAR|SEK|NOK|DKK|PLN|CZK|HUF|MXN|BRL|ARS|CLP|COP|PEN|UYU|BOB|PYG|VES|DOP|GTQ|CRC";
+  "USD|EUR|GBP|JPY|CNY|RMB|CHF|CAD|AUD|NZD|HKD|SGD|TWD|INR|PKR|BDT|LKR|IDR|MYR|PHP|THB|VND|KRW|RUB|UAH|TRY|ILS|AED|SAR|QAR|KWD|EGP|NGN|KES|GHS|MAD|ZAR|SEK|NOK|DKK|ISK|PLN|CZK|HUF|RON|BGN|MXN|BRL|ARS|CLP|COP|PEN|UYU|BOB|PYG|VES|DOP|GTQ|CRC|HNL|NIO|PAB|CUP|JMD|TTD|BTC|ETH";
 const CURRENCY_SYMBOLS = "$€£¥₹₩₽₺₫₱฿";
 const CURRENCY_PREFIX = new RegExp(`^(?:US\\$|R\\$|S\\/\\.?|(?:${CURRENCY_CODES})(?![A-Za-z])|[${CURRENCY_SYMBOLS}])\\s*`);
 const CURRENCY_SUFFIX = new RegExp(`\\s*(?:[${CURRENCY_SYMBOLS}]|(?<![A-Za-z])(?:${CURRENCY_CODES}))$`);
@@ -93,7 +93,9 @@ function toPlainNumber(body: string, decimal: "." | ","): string | null {
   const frac = at < 0 ? "" : body.slice(at + 1);
   if (frac && !/^\d+$/.test(frac)) return null;
   if (int.includes(thousands)) {
-    if (!(thousands === "," ? /^\d{1,3}(?:,\d{3})+$/ : /^\d{1,3}(?:\.\d{3})+$/).test(int)) return null;
+    // 1,234,567 · 1.234.567 · Indian 12,34,567
+    const grouped = thousands === "," ? /^(?:\d{1,3}(?:,\d{3})+|\d{1,2}(?:,\d{2})*,\d{3})$/ : /^\d{1,3}(?:\.\d{3})+$/;
+    if (!grouped.test(int)) return null;
     int = int.split(thousands).join("");
   } else if (int && !/^\d+$/.test(int)) return null;
   if (!int && !frac) return null;
@@ -490,9 +492,9 @@ export function aggregate(values: number[], how: Aggregate): number {
     case "mean":
       return values.reduce((a, b) => a + b, 0) / values.length;
     case "max":
-      return Math.max(...values);
+      return values.reduce((a, b) => (b > a ? b : a), -Infinity);
     case "min":
-      return Math.min(...values);
+      return values.reduce((a, b) => (b < a ? b : a), Infinity);
     default:
       return values[0];
   }
@@ -545,8 +547,36 @@ export function isNum(v: unknown): v is number {
   return typeof v === "number" && Number.isFinite(v);
 }
 
-/** Tries to parse a date-ish string. Returns ms timestamp or null. */
-export function parseDate(v: Cell): number | null {
+/**
+ * Whether a column's slash dates are day-first: true when some value can only be
+ * day-first ("18/01/2025") and none can only be month-first ("01/18/2025");
+ * undefined when the column doesn't say.
+ */
+export function detectDayFirst(values: readonly unknown[]): boolean | undefined {
+  let day = false;
+  let month = false;
+  for (const v of values.slice(0, 5000)) {
+    if (typeof v !== "string") continue;
+    const m = v.trim().match(/^(\d{1,2})\/(\d{1,2})\/\d{2,4}$/);
+    if (!m) continue;
+    if (Number(m[1]) > 12) day = true;
+    if (Number(m[2]) > 12) month = true;
+  }
+  return day && !month ? true : month && !day ? false : undefined;
+}
+
+/** parseDate bound to one column's day/month order, so "03/01" and "18/01" agree. */
+export function dateParserFor(values: readonly unknown[]): (v: Cell) => number | null {
+  const dayFirst = detectDayFirst(values);
+  return (v) => parseDate(v, dayFirst);
+}
+
+/**
+ * Tries to parse a date-ish string. Returns ms timestamp or null. `dayFirst`
+ * resolves "03/01/2025" (see dateParserFor); without it, slash dates are
+ * month-first unless the first part is over 12.
+ */
+export function parseDate(v: Cell, dayFirst?: boolean): number | null {
   if (v === null || v === undefined) return null;
   if (typeof v === "number") return v > 1000 && v < 3000 ? Date.UTC(v, 0, 1) : null;
   const s = v.trim();
@@ -559,8 +589,8 @@ export function parseDate(v: Cell): number | null {
   const dm = s.match(/^(\d{1,2})([/.])(\d{1,2})\2(\d{2,4})$/);
   if (dm) {
     const [a, b] = [Number(dm[1]), Number(dm[3])];
-    const dayFirst = dm[2] === "." || a > 12;
-    const [day, month] = dayFirst ? [a, b] : [b, a];
+    const first = dm[2] === "." || (dayFirst ?? a > 12);
+    const [day, month] = first ? [a, b] : [b, a];
     const y = Number(dm[4]);
     const year = dm[4].length === 2 ? (y < 50 ? 2000 : 1900) + y : y;
     if (month < 1 || month > 12 || day < 1 || day > 31) return null;

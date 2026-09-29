@@ -11,7 +11,7 @@ Open **Create** and use the **Data** tab:
 - **Sample data** — every chart type ships with a realistic sample so you can see what it expects.
 - **Download template** — a small CSV with the right columns for the current chart type.
 
-Plotpaper understands messy numbers: `1,234.5`, `1.234,5`, `S/ 1.200`, `USD 3,200`, `$3.2k`, `12%`, `(300)` for negatives, `N/A` or `-` for missing values — and dates like `2024-12-31`, `31/12/2024` or `31.12.2024`. Each column is typed automatically as **number**, **text** or **date** (shown as `123`, `Aa` or 📅 in the table header).
+Plotpaper understands messy numbers: `1,234.5`, `1.234,5`, `1,23,456`, `S/ 1.200`, `USD 3,200`, `$3.2k`, `12%`, `(300)` for negatives, `N/A` or `-` for missing values — and dates like `2024-12-31`, `31/12/2024` or `31.12.2024`. Each column is typed automatically as **number**, **text** or **date** (shown as `123`, `Aa` or 📅 in the table header).
 
 You can edit any cell, rename columns by clicking their header, add or delete rows and columns (**Enter** saves an edit, **Esc** cancels it). Undo / redo with **⌘Z / ⇧⌘Z** (or Ctrl+Z / Ctrl+Y).
 
@@ -62,7 +62,7 @@ The blue **PNG** button (or **⌘S / Ctrl+S**) downloads a high-resolution image
 - **Copy share link** — the whole chart is compressed *into the URL*. Nobody's server stores it. Very large datasets don't fit in a link — export a Plotpaper file instead.
 - **Plotpaper file (.json)** — the complete chart (data + settings). Open it later with **Open Plotpaper file**.
 
-Your current chart is also saved automatically in this browser. Opening a share link, an example or a gallery remix never throws that work away: the new chart opens on top of it, and **Undo** brings your previous chart back.
+Your current chart is also saved automatically in this browser. Opening a share link, an example or a gallery remix never throws that work away: the new chart opens on top of it, **Undo** brings your previous chart back, and a **Restore it** button keeps it one click away (even after a reload) until you dismiss it.
 
 ## 5. The gallery
 

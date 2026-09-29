@@ -25,12 +25,26 @@ export type LinearOpts = {
   ticks?: number;
 };
 
+/** Min of a large array (`Math.min(...a)` overflows the call stack past ~100k items). */
+export function minOf(values: readonly number[], fallback = 0): number {
+  let m = Infinity;
+  for (const v of values) if (v < m) m = v;
+  return m === Infinity ? fallback : m;
+}
+
+/** Max of a large array; see minOf. */
+export function maxOf(values: readonly number[], fallback = 0): number {
+  let m = -Infinity;
+  for (const v of values) if (v > m) m = v;
+  return m === -Infinity ? fallback : m;
+}
+
 /** Linear scale with nice, negative-aware ticks. Never divides by zero. */
 export function linear(values: number[], range: [number, number], opts: LinearOpts = {}): LinearScale {
   const { zero = true, nice = true, ticks: tickCount = 5 } = opts;
   const finite = values.filter((v) => Number.isFinite(v));
-  let lo = finite.length ? Math.min(...finite) : 0;
-  let hi = finite.length ? Math.max(...finite) : 1;
+  let lo = finite.length ? minOf(finite) : 0;
+  let hi = finite.length ? maxOf(finite) : 1;
   if (zero) {
     lo = Math.min(lo, 0);
     hi = Math.max(hi, 0);
@@ -71,8 +85,8 @@ export function linear(values: number[], range: [number, number], opts: LinearOp
 /** Log10 scale fitted to the data, with 1-2-5 ticks. Values must be > 0. */
 export function logScale(values: number[], range: [number, number]): LinearScale {
   const lv = values.filter((v) => v > 0 && Number.isFinite(v)).map(Math.log10);
-  let lo = lv.length ? Math.min(...lv) : 0;
-  let hi = lv.length ? Math.max(...lv) : 1;
+  let lo = lv.length ? minOf(lv) : 0;
+  let hi = lv.length ? maxOf(lv) : 1;
   if (hi - lo < 0.3) {
     lo -= 0.15;
     hi += 0.15;

@@ -242,9 +242,10 @@ describe("AI hardening", () => {
     const bad = specToAIOutput(SPEC_TEMPLATES[0].spec, "");
     (bad.layers as unknown[]) = [{ mark: "bar", encoding: { x: { field: "ghost" } } }];
     const json = vi.fn().mockResolvedValue(bad);
-    // One token: the first call spends it, so no repair call is made.
+    // One token: the first call spends it, so no repair call is made and the user is told why.
     const res = await handleSpec(post({ prompt: "x" }), deps({ limiter: new RateLimiter(1), provider: { name: "mock", model: "m", json } }));
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toBeTruthy();
     expect(json).toHaveBeenCalledTimes(1);
     // Two tokens: first call + repair.
     const json2 = vi.fn().mockResolvedValue(bad);
@@ -252,5 +253,75 @@ describe("AI hardening", () => {
     await handleSpec(post({ prompt: "x" }), deps({ limiter, provider: { name: "mock", model: "m", json: json2 } }));
     expect(json2).toHaveBeenCalledTimes(2);
     expect(limiter.take("ip:1.2.3.4")).toBeGreaterThan(0);
+  });
+});
+
+describe("second review round", () => {
+  it("reads a column of dd/mm dates in one consistent order", async () => {
+    const { dateParserFor, detectDayFirst } = await import("@/lib/viz/data");
+    const col = ["03/01/2025", "12/01/2025", "13/01/2025", "18/01/2025"];
+    expect(detectDayFirst(col)).toBe(true);
+    const toDate = dateParserFor(col);
+    const days = col.map((d) => new Date(toDate(d)!).toISOString().slice(0, 10));
+    expect(days).toEqual(["2025-01-03", "2025-01-12", "2025-01-13", "2025-01-18"]);
+    expect(detectDayFirst(["01/13/2025", "01/02/2025"])).toBe(false);
+    expect(detectDayFirst(["01/02/2025"])).toBeUndefined();
+  });
+
+  it("the messy fixture's dates plot in calendar order", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { lineChart } = await import("@/lib/viz/charts/lines");
+    const { withData } = await import("@/lib/viz/docOps");
+    const t = parseTextToTable(readFileSync("tests/fixtures/messy.csv", "utf8"));
+    const doc = withData(docFromSample(lineChart), lineChart, t.columns, t.rows);
+    const d = { ...doc, mapping: { x: "Fecha", series: ["Unidades"] } };
+    const { element, issues } = renderPoster(d, lineChart, { uid: "m" });
+    expect(issues).toEqual([]);
+    const html = renderToStaticMarkup(element);
+    expect(html).not.toMatch(/NaN/);
+    // 03/01/2025 is the 3rd of January, and the axis runs Jan 3 → Jan 18 in order.
+    const points = [...html.matchAll(/Unidades · (\d{4}-\d{2}-\d{2})/g)].map((m) => m[1]);
+    expect(points[0]).toBe("2025-01-03");
+    expect(points.at(-1)).toBe("2025-01-18");
+    expect([...points].sort()).toEqual(points);
+    expect(html).not.toMatch(/Mar|Dec/);
+  });
+
+  it("parses Indian digit grouping", () => {
+    expect(parseNumber("₹1,23,456.78")).toBe(123456.78);
+    expect(parseNumber("12,34,567")).toBe(1234567);
+    expect(parseNumber("INR 1,00,000")).toBe(100000);
+    expect(parseNumber("12,34,5")).toBeNull();
+    expect(parseNumber("THB 1,200")).toBe(1200);
+    expect(parseNumber("100 PHP")).toBe(100);
+  });
+
+  it("keeps default corners, long column names and data aligned", () => {
+    expect(sanitizeDoc({ style: { theme: "paper" }, data: [] } as unknown as ChartDoc).style.corners).toBe(4);
+    expect(sanitizeDoc({ style: { corners: 0 }, data: [] } as unknown as ChartDoc).style.corners).toBe(0);
+    const long = "How satisfied were you with ".repeat(12);
+    const d = sanitizeDoc({ columns: [{ name: long, type: "number" }], data: [{ [long]: 5 }], mapping: { value: long } } as unknown as ChartDoc);
+    expect(d.columns[0].name).toBe(long);
+    expect(d.data[0][d.columns[0].name]).toBe(5);
+  });
+
+  it("renaming or adding a column never uses a reserved name", async () => {
+    const { addColumn, renameColumn } = await import("@/lib/viz/docOps");
+    const doc = docFromSample(barChart);
+    const renamed = renameColumn(doc, "orders", "__proto__");
+    expect(renamed.columns.map((c) => c.name)).toContain("__proto___col");
+    expect(renamed.data[0].__proto___col).toBe(doc.data[0].orders);
+    expect(renamed.mapping.value).toBe("__proto___col");
+    expect(sanitizeDoc(renamed)).toEqual(renamed);
+    expect(addColumn(doc, "constructor").columns.at(-1)?.name).toBe("constructor_col");
+  });
+
+  it("scales handle more values than fit in a function call", async () => {
+    const { linear, minOf, maxOf } = await import("@/lib/viz/scale");
+    const big = Array.from({ length: 500_000 }, (_, i) => i - 1000);
+    expect(minOf(big)).toBe(-1000);
+    expect(maxOf(big)).toBe(498_999);
+    expect(() => linear(big, [0, 100])).not.toThrow();
+    expect(minOf([], 7)).toBe(7);
   });
 });
