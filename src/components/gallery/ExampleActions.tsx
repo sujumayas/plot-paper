@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/Toasts";
 import { useI18n } from "@/lib/i18n";
 import { resolveDefinition } from "@/lib/resolveDef";
 import { KEYS, writeJSON } from "@/lib/storage";
-import { downloadPNG, downloadSVG } from "@/lib/viz/export/browser";
+const exporter = () => import("@/lib/viz/export/browser");
 import type { ChartDoc } from "@/lib/viz/types";
 
 export function ExampleActions({ doc, exampleId, spec }: { doc: ChartDoc; exampleId: string | null; spec: unknown }) {
@@ -33,10 +33,10 @@ export function ExampleActions({ doc, exampleId, spec }: { doc: ChartDoc; exampl
         {t("gallery.remix")} <IconArrowRight />
       </button>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-        <button className="btn" type="button" onClick={() => downloadPNG(doc, def, opts).catch(fail)}>
+        <button className="btn" type="button" onClick={() => exporter().then((m) => m.downloadPNG(doc, def, opts)).catch(fail)}>
           <IconDownload /> PNG
         </button>
-        <button className="btn" type="button" onClick={() => downloadSVG(doc, def, opts).catch(fail)}>
+        <button className="btn" type="button" onClick={() => exporter().then((m) => m.downloadSVG(doc, def, opts)).catch(fail)}>
           <IconVector /> SVG
         </button>
       </div>

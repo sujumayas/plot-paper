@@ -316,6 +316,6 @@ export const es: Messages = {
     guide: "Guía de uso",
     plotspec: "Referencia PlotSpec",
     selfHost: "Instalar en tu servidor",
-    made: "Hecho con cariño. Código abierto.",
+    made: "Hecho con cariño.",
   },
 };

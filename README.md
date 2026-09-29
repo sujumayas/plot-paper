@@ -1,139 +1,85 @@
 # Plotpaper
 
-A data-visualization playground. Pick a chart type, drop a CSV, publish to an Explore gallery. Ported from a Claude Design prototype (`design_package/`) into a real Next.js + Supabase app.
+**Spreadsheet in, beautiful chart out.** Paste your data, pick one of 26 chart types, and export a crisp PNG sized for slides, reports or socials — with fonts embedded, sources credited and labels that never overlap. No account, nothing to install.
 
-## Stack
+![Plotpaper](public/og.png)
 
-- **Frontend:** Next.js 15 (App Router) + TypeScript + Tailwind CSS v4.
-- **Backend:** Supabase — Postgres + RLS, Auth (email OTP), Edge Functions, Storage.
-- **AI:** Supabase Edge Function calling **Claude Opus 4.7** (`claude-opus-4-7`).
-- **Hosting:** Netlify (via `@netlify/plugin-nextjs`).
+- **26 chart types** — columns, ranked bars, grouped & stacked, lollipop, dumbbell, waterfall, funnel, line, area, slope, calendar heatmap, pie, donut, treemap, waffle, scatter & bubble (log scales, trend lines), heatmap, histogram, box plot, radar, KPI cards, progress rings, timeline/Gantt.
+- **Presentation-ready by default** — headline + subtitle + source + note, direct labels, legends, highlight-the-winner, smart label rotation/truncation, 8 themes, 12 palettes (incl. colorblind-safe), 6 font pairings, number formats for any country.
+- **Export anywhere** — PNG 1×–4×, SVG, PDF, copy-to-clipboard, share links (the chart lives *inside* the URL), portable `.plotpaper.json` files. Sizes for slides, Instagram, stories, link previews, A4 or custom.
+- **Data that just works** — CSV/TSV/JSON upload or paste from Excel/Sheets; understands `1.234,5`, `S/ 1.200`, `12%`, `(300)`, `N/A`; edit in a grid; wide or long data.
+- **Creator Studio** — design new chart types with **PlotSpec**, a small declarative grammar (validated JSON, never code), or let **Claude** draft one from a sentence or a screenshot.
+- **Local-first** — runs entirely in the browser. Supabase (accounts + community gallery) and Anthropic (AI) are optional.
+- **42 real-world examples** in the gallery (NOAA, World Bank, Our World in Data, BCRP, EIA…), 6 in Spanish. UI in English and Spanish.
 
 ## Quick start
 
 ```bash
-# 1. Install deps
 npm install
-
-# 2. Configure env — copy and fill
-cp .env.local.example .env.local
-
-# 3. Apply the DB schema (either via supabase CLI against your project, or paste into the SQL editor)
-#    Files in supabase/migrations/ run in numeric order:
-#      0001_schema.sql           # tables + RLS + RPCs
-#      0002_seed_viz_types.sql   # 13 built-in viz types
-#      0003_ai_storage.sql       # ai-refs storage bucket
-
-# 4. Provision seed user + 9 gallery graphs (requires SUPABASE_SERVICE_ROLE_KEY)
-npm run seed
-
-# 5. Deploy the AI edge function + set its secret
-supabase functions deploy generate-viz-type
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
-
-# 6. Run the dev server
-npm run dev   # → http://localhost:3000
+npm run dev              # http://localhost:3000 — everything works with zero config
 ```
 
-## Environment variables
+Enable AI (optional):
 
-| Variable                         | Used by                                         |
-| -------------------------------- | ----------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`       | Next.js (client + server)                       |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`  | Next.js (client + server)                       |
-| `SUPABASE_SERVICE_ROLE_KEY`      | `scripts/seed.ts` only (never ships to browser) |
-| `ANTHROPIC_API_KEY`              | Edge function — set via `supabase secrets set`, **not** Netlify |
+```bash
+echo "ANTHROPIC_API_KEY=sk-ant-..." >> .env.local   # or AI_PROVIDER=mock for a keyless demo
+```
 
-## Project layout
+## Documentation
+
+| | |
+|---|---|
+| [User guide](docs/user-guide.md) | Data, charts, styling, export, sharing, troubleshooting |
+| [PlotSpec reference](docs/plotspec.md) | The grammar for custom chart types |
+| [Creating chart types](docs/creating-chart-types.md) | Studio (no code) or TypeScript plugins |
+| [AI features](docs/ai.md) | Claude integration, setup, privacy, demo mode |
+| [Self-hosting & configuration](docs/self-hosting.md) | Env vars, branding, Supabase, deploying, security |
+
+The same docs are served in the app at `/guide`.
+
+## Architecture
 
 ```
-design_package/              reference prototype (read-only, don't edit)
 src/
-  app/
-    explore/page.tsx         public feed (SSR, anon-readable)
-    build/page.tsx           composer (hydrates ?draft / ?fork / ?useData / ?type)
-    auth/signin/page.tsx     standalone OTP form
-    auth/callback/route.ts   post-OTP redirect handler
-    dev/viz-gallery/page.tsx all 13 seed renderers on one page (keep for smoke tests)
-  components/
-    TopBar.tsx
-    chart/{ChartView,ChartPreview}.tsx
-    explore/{ExploreView,GraphCard,DetailModal}.tsx
-    build/{BuilderView,BuilderSidebar,BuilderCanvas,DataExportModal,CSVPanel,TweaksPanel,AIModal}.tsx
-    auth/{SignInModal,SignInForm,UserMenu}.tsx
-    icons.tsx                15 inline SVG glyphs
-    ui/Button.tsx
+  app/                    Next.js App Router: landing, /build, /explore, /studio, /guide, /api/ai/*
+  components/             UI (builder, gallery, studio, shell, auth)
+  config/site.ts          Branding and defaults (all overridable by env vars)
   lib/
-    viz/helpers.ts           fmt, toNum, niceMax, Palette
-    viz/types.ts             VizCatalogEntry, BaseRendererId, VizOpts
-    viz/renderers/*.tsx      10 physical renderers (bar, hbar, line, area, pie, scatter,
-                             heatmap, radar, kpi, timeline). Multi-line uses line;
-                             donut uses pie with donut=true.
-    viz/catalog.tsx          13 seed entries with glyphs + sample data
-    viz/resolveViz.ts        DB row → renderable VizCatalogEntry
-    supabase/{client,server,middleware}.ts
-    supabase/types.ts        hand-typed Database schema
-    csv.ts, draft.ts, tweaks.ts, export.ts, download.ts, migrate.ts
-    ai/generateVizType.ts    client wrapper for the edge function
-  hooks/{useUser,useToasts}.ts
-supabase/
-  config.toml
-  migrations/0001_schema.sql 0002_seed_viz_types.sql 0003_ai_storage.sql
-  functions/generate-viz-type/index.ts
-scripts/seed.ts              provisions esen.espinosa@gmail.com + 9 gallery graphs
+    viz/                  The chart engine — framework-agnostic, pure functions
+      types.ts            ChartDefinition (the plugin contract), ChartDoc, styles
+      engine.tsx          renderPoster(): title/legend/plot/footer → one SVG (preview = export)
+      charts/*.tsx        The 26 built-in chart plugins + registry
+      spec/               PlotSpec: types, validator, interpreter, templates
+      data.ts             Parsing, type inference, auto-mapping, aggregation
+      scale.ts format.ts text.ts themes.ts parts.tsx docOps.ts
+      export/             SVG with embedded fonts, PNG/PDF/clipboard in the browser
+    ai/                   Protocol, browser client, server (config, prompts, schemas, providers, handlers)
+    examples/             42 example datasets (JSON) + loaders
+    i18n/                 en / es dictionaries (type-checked parity)
+supabase/migrations/      Optional schema with row-level security
+tests/unit                Vitest: parsing, scales, every chart × hostile data, PlotSpec security, AI (fake Claude client)
+tests/e2e                 Playwright: builder flows, exports, sharing, gallery, studio, mobile, large datasets
+scripts/                  render-gallery (visual QA → PNG), og-image, seed, gen-examples
 ```
 
-## Domain model
+A chart is a document (`ChartDoc`: data + column mapping + options + style + text). `renderPoster(doc, definition)` returns one SVG element used for the on-screen preview, server-rendered gallery thumbnails and every export, so what you see is exactly what you get.
 
-- **`viz_types`**: renderer definitions. Seeded rows have `owner_id = null, is_public = true`. User-owned customs have `owner_id = user.id, is_public = false`, and become readable to others when referenced by a published graph (via an RLS `EXISTS` subquery).
-- **`graphs`**: published data instances. Reference a viz_type. Seed graphs keep their prototype handles (`mara.k`, `jules.t`, …) via the `display_author` column while `author_id` points to Esen for ownership.
-- **`saved_types`**: which user has saved which viz type (drives the "Your types" section in the builder sidebar).
-- **`likes`**: one row per user-graph pair.
+## Scripts
 
-## Auth matrix
+| Command | |
+|---|---|
+| `npm run dev` / `build` / `start` | Next.js |
+| `npm test` | Unit tests (≈600) |
+| `npm run test:e2e` | Playwright end-to-end tests (builds and starts the app with the mock AI) |
+| `npm run lint` / `typecheck` | ESLint / TypeScript |
+| `npm run render:gallery -- [--examples] [--theme midnight] [--size 1080x1350] [--only bar,line]` | Render charts to `.render/*.png` for visual review |
+| `npm run gen:examples` | Rebuild the examples manifest after adding a dataset |
+| `npm run seed` | Publish the examples to a Supabase community gallery |
 
-| Action                             | Anon | Auth |
-| ---------------------------------- | :--: | :--: |
-| Browse Explore, open detail modal  | ✓    | ✓    |
-| Build (pick viz, upload CSV, tweak)| ✓    | ✓    |
-| Export PNG / SVG / PDF / JSON      | ✓    | ✓    |
-| Local draft persistence            | localStorage | DB-backed |
-| AI generate a new viz type         | —    | ✓    |
-| Save a viz type to your library    | —    | ✓    |
-| Publish graph to Explore           | —    | ✓    |
-| Fork a graph                       | —    | ✓    |
-| Like a graph                       | —    | ✓    |
+## Testing philosophy
 
-On first successful sign-in, `lib/migrate.ts` copies `pp-draft`, `pp-custom-vizzes`, and `pp-liked-graphs` into the account and clears those keys. `pp-tweaks` is kept (it's a UI preference).
-
-## Security cornerstones
-
-- **No user-authored renderer code.** Claude only returns `{ baseRendererId, name, desc, category, columns, sample }`. Every chart routes through one of 10 hardcoded base renderers in `src/lib/viz/renderers/`.
-- **RLS on `viz_types`**: readable iff `is_public = true` OR `owner_id = auth.uid()` OR referenced by a published graph.
-- **RLS on `graphs`**: published readable by everyone; drafts only by author.
-- **AI edge function verifies JWT** before generating; unauthenticated requests get 401.
-- **Reference images** upload to `ai-refs/<user_id>/*` with per-user RLS.
-
-## Netlify
-
-Set in the dashboard:
-
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-(`SUPABASE_SERVICE_ROLE_KEY` is optional on Netlify — only needed if you want to run `npm run seed` from CI.)
-
-`netlify.toml` already wires `@netlify/plugin-nextjs` and Node 20.
-
-After first deploy, add the Netlify domain to Supabase Auth → URL Configuration → Redirect URLs so OTP magic-links work in prod.
-
-## Dev notes
-
-- **Smoke test page**: `/dev/viz-gallery` renders all 13 seed viz types in one grid — useful after any renderer edit.
-- **SVG holder uses `aspect-ratio: 820/460`** so the chart sits at the top of its container instead of stretching centered in dead space.
-- **Export functions** (`lib/export.ts`) inline CSS vars as hex when serializing SVG for PNG/SVG/PDF export, so the files look right when opened outside the app.
-- **Prompt caching** is enabled on the system prompt of `generate-viz-type` (saves ~70% tokens on repeat calls).
+Every built-in chart is rendered against empty data, single rows, zeros, negatives, 1e15 and 1e-9, garbage cells, 100-character unicode labels, 5,000 rows, every size preset, theme, palette, font pairing and option value — and the output is checked for `NaN`/`Infinity`. The AI pipeline is tested end-to-end with a fake Anthropic client that simulates refusals, truncation, non-JSON answers, rate limits, auth failures and schema rejections. E2E tests cover uploads (including a deliberately messy European CSV and 20,000 real flights), exports (PNG pixel sizes, embedded fonts), share links, the gallery, the Studio and mobile layouts.
 
 ## License
 
-Private — not published.
+Private — all rights reserved (choose a license before publishing the source). Example datasets keep their original licenses; see [`src/lib/examples/datasets/SOURCES.md`](src/lib/examples/datasets/SOURCES.md). Bundled fonts are under the SIL Open Font License.

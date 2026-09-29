@@ -7,7 +7,7 @@ import { downloadText } from "@/lib/download";
 import { useI18n, type MessageKey } from "@/lib/i18n";
 import { MAX_COLUMNS, MAX_ROWS, parseTextToTable } from "@/lib/viz/data";
 import { addColumn, addRow, deleteColumn, deleteRow, docToCSV, renameColumn, setCell, templateCSV } from "@/lib/viz/docOps";
-import { fileBase } from "@/lib/viz/export/browser";
+import { fileBase } from "@/lib/viz/export/filename";
 import type { Cell, ChartDefinition, ChartDoc, ColumnInfo, DataRow } from "@/lib/viz/types";
 
 export const MAX_FILE_MB = 20;

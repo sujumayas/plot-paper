@@ -14,18 +14,20 @@ import { addColumn, addRow, deleteColumn, deleteRow, docToCSV, renameColumn, set
 import { docFromSample, renderPoster } from "@/lib/viz/engine";
 import { embeddedFontCSS, posterSVG } from "@/lib/viz/export/svg";
 
+type Tree = { [k: string]: string | Tree };
+const at = (d: object, k: string) => k.split(".").reduce<string | Tree>((o, p) => (o as Tree)[p], d as Tree);
 const keys = (o: object, p = ""): string[] =>
   Object.entries(o).flatMap(([k, v]) => (typeof v === "object" ? keys(v, `${p}${k}.`) : [`${p}${k}`]));
 
 describe("i18n", () => {
   it("Spanish has exactly the English keys, all non-empty", () => {
     expect(keys(es).sort()).toEqual(keys(en).sort());
-    for (const k of keys(es)) expect(k.split(".").reduce((o: any, p) => o[p], es)).not.toBe("");
+    for (const k of keys(es)) expect(at(es, k)).not.toBe("");
   });
 
   it("placeholders are preserved in both languages", () => {
     for (const k of keys(en)) {
-      const get = (d: object) => k.split(".").reduce((o: any, p) => o[p], d) as string;
+      const get = (d: object) => at(d, k) as string;
       const ph = (s: string) => (s.match(/\{\w+\}/g) ?? []).sort();
       expect(ph(get(es)), k).toEqual(ph(get(en)));
     }

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { siteConfig } from "@/config/site";
-import { Footer } from "@/components/shell/Footer";
 import { TopNav } from "@/components/shell/TopNav";
 import { ToastProvider } from "@/components/ui/Toasts";
 import { I18nProvider } from "@/lib/i18n";

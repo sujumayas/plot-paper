@@ -3,7 +3,10 @@
 import { downloadBlob, downloadText } from "@/lib/download";
 import type { Locale } from "../engine";
 import type { ChartDefinition, ChartDoc } from "../types";
+import { fileBase } from "./filename";
 import { browserFontLoader, embeddedFontCSS, posterSVG } from "./svg";
+
+export { fileBase };
 
 export type ExportOptions = {
   locale?: Locale;
@@ -11,17 +14,6 @@ export type ExportOptions = {
   /** Pixel density multiplier for PNG (1–4). */
   scale?: number;
 };
-
-export function fileBase(doc: ChartDoc): string {
-  const base = (doc.title || "chart")
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  return base || "chart";
-}
 
 /** Standalone SVG string with fonts embedded (renders identically anywhere). */
 export async function buildSVG(doc: ChartDoc, def: ChartDefinition, opts: ExportOptions = {}): Promise<string> {

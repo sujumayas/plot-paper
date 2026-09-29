@@ -1,13 +1,20 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { IconChevron, IconCopy, IconDownload, IconImage, IconJson, IconLink, IconPrinter, IconUpload, IconVector } from "@/components/icons";
 import { Popover } from "@/components/ui/Popover";
 import { useToast } from "@/components/ui/Toasts";
 import { useI18n } from "@/lib/i18n";
 import { shareURL } from "@/lib/share";
-import { copyPNG, downloadDocJSON, downloadPNG, downloadSVG, fileBase, printPDF } from "@/lib/viz/export/browser";
+import { fileBase } from "@/lib/viz/export/filename";
+
+/** The exporter (incl. react-dom/server) is only downloaded when first used. */
+const exporter = () => import("@/lib/viz/export/browser");
+const downloadPNG: typeof import("@/lib/viz/export/browser").downloadPNG = async (...a) => (await exporter()).downloadPNG(...a);
+const downloadSVG: typeof import("@/lib/viz/export/browser").downloadSVG = async (...a) => (await exporter()).downloadSVG(...a);
+const printPDF: typeof import("@/lib/viz/export/browser").printPDF = async (...a) => (await exporter()).printPDF(...a);
+const downloadDocJSON = async (...a: Parameters<typeof import("@/lib/viz/export/browser").downloadDocJSON>) => (await exporter()).downloadDocJSON(...a);
 import type { ChartDefinition, ChartDoc } from "@/lib/viz/types";
 
 type Props = {
@@ -22,6 +29,11 @@ export function ExportMenu({ doc, def, onImport }: Props) {
   const [scale, setScale] = useState(2);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  // Warm the exporter in the background so the first export is instant.
+  useEffect(() => {
+    const id = setTimeout(() => void exporter(), 1500);
+    return () => clearTimeout(id);
+  }, []);
   const opts = { locale, credit: siteConfig.credit, scale };
 
   const run = async (fn: () => Promise<void>) => {
@@ -97,7 +109,7 @@ export function ExportMenu({ doc, def, onImport }: Props) {
                 onClick={() => {
                   close();
                   run(async () => {
-                    if (await copyPNG(doc, def, opts)) toast(t("export.copiedImage"));
+                    if (await (await exporter()).copyPNG(doc, def, opts)) toast(t("export.copiedImage"));
                     else {
                       await downloadPNG(doc, def, opts);
                       toast(t("export.copyUnsupported"));

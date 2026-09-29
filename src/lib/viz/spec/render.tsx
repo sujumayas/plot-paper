@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { parseDate, parseNumber } from "../data";
 import { formatPercent } from "../format";
-import { EmptyState, HaloText, XAxis, YAxis, arcPath, fs, layoutCategoryLabels, linePath, tickLabelWidth, CategoryLabels, Bar } from "../parts";
+import { Bar, CategoryLabels, EmptyState, HaloText, YAxis, arcPath, fs, layoutCategoryLabels, linePath } from "../parts";
 import { band, linear, logScale, mixHex, readableOn, type BandScale, type LinearScale } from "../scale";
 import { pretty, textWidth, truncate } from "../text";
 import { G } from "../charts/glyphs";
@@ -33,7 +33,6 @@ function layerData(spec: PlotSpec, layer: Layer, recs: Rec[], c: RenderContext):
   let out = recs;
   if (layer.fold) {
     const cols = c.cols(layer.fold);
-    const key = layer.fold;
     out = [];
     for (const [i, r] of recs.entries()) {
       for (const col of cols) {

@@ -314,7 +314,7 @@ export const en = {
     guide: "User guide",
     plotspec: "PlotSpec reference",
     selfHost: "Self-hosting",
-    made: "Made with care. Open source.",
+    made: "Made with care.",
   },
 };
 

@@ -2,7 +2,7 @@ import { parseDate } from "../data";
 import { band, mixHex, readableOn } from "../scale";
 import { EmptyState, arcPath, fs } from "../parts";
 import { textWidth, truncate, wrapText } from "../text";
-import type { ChartDefinition, RenderContext } from "../types";
+import type { ChartDefinition } from "../types";
 import { G } from "./glyphs";
 import { dateTicks } from "./lines";
 

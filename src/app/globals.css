@@ -422,7 +422,7 @@ details.more summary { cursor: pointer; font-weight: 600; font-size: 13px; color
   .picker .cat { display: contents; }
   .type-btn { width: auto; flex: none; padding: 6px 10px 6px 6px; }
   .type-btn .fit { display: none; }
-  .stage { min-height: 50vh; padding: 16px; }
+  .stage { min-height: 0; padding: 16px; }
   .inspector { border-left: 0; border-top: 1px solid var(--line); }
   .studio { grid-template-columns: 1fr; height: auto; }
   .studio-editor { min-height: 60vh; }

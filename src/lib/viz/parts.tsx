@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { BandScale, LinearScale } from "./scale";
+import type { LinearScale } from "./scale";
 import { textWidth, truncate } from "./text";
 import type { RenderContext } from "./types";
 
