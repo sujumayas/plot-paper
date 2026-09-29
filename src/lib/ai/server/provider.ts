@@ -59,7 +59,7 @@ export function extractJSON(text: string): unknown {
 
 export function createAnthropicProvider(config: AIConfig, injected?: AnthropicLike): AIProvider {
   const client: AnthropicLike =
-    injected ?? new Anthropic({ apiKey: config.apiKey ?? undefined, timeout: config.timeoutMs, maxRetries: 2 });
+    injected ?? new Anthropic({ apiKey: config.apiKey ?? undefined, timeout: config.timeoutMs, maxRetries: 1 });
 
   async function call(req: JSONRequest, structured: boolean) {
     const content: Anthropic.ContentBlockParam[] = [];
@@ -128,5 +128,7 @@ export function toAIError(err: unknown): AIError {
   if (err instanceof Anthropic.APIConnectionError) return new AIError("upstream", "Couldn't reach the Anthropic API.", 502);
   if (err instanceof Anthropic.InternalServerError) return new AIError("upstream", "Claude is temporarily unavailable. Try again.", 502);
   if (err instanceof Anthropic.APIError) return new AIError("upstream", `Anthropic API error (${err.status ?? "?"}).`, 502);
-  return new AIError("upstream", err instanceof Error ? err.message : "Unknown AI error", 500);
+  // Anything else is a bug or an environment problem: log it, but don't leak internals to the browser.
+  console.error("[ai] unexpected provider error", err);
+  return new AIError("upstream", "Unexpected AI error. Try again.", 500);
 }

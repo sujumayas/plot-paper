@@ -56,9 +56,9 @@ See [AI features](ai.md).
 | `AI_EFFORT` | `medium` | `low` … `max`. |
 | `AI_MAX_TOKENS` | `16000` | |
 | `AI_REFUSAL_FALLBACK` | `true` | Server-side fallback model if a request is declined. |
-| `AI_REQUIRE_AUTH` | `auto` | `auto` = require sign-in when Supabase is configured. |
+| `AI_REQUIRE_AUTH` | `auto` | `auto` = require sign-in when Supabase is configured; `true`/`1`/`yes`/`on` always require it. |
 | `AI_RATE_LIMIT_PER_HOUR` | `20` | Per user (or IP). `0` = unlimited. |
-| `AI_TIMEOUT_MS` | `120000` | |
+| `AI_TIMEOUT_MS` | `120000` | Minimum 5000. Empty values fall back to the defaults. |
 
 ### Supabase (optional)
 
@@ -73,7 +73,13 @@ See [AI features](ai.md).
 3. Enable **Email** auth with OTP codes; add your site URL to **Auth → URL configuration → Redirect URLs**.
 4. Optionally seed the community gallery with the bundled examples: `npm run seed`.
 
-Row-level security is on for every table: anyone can read published charts; only authors can edit their own.
+Row-level security is on for every table: anyone can read published charts; only authors can edit their own. Likes, views, remix counts, authorship and creation dates can only change through the database functions, and a chart can hold at most 5,000 rows.
+
+To test the migrations and security policies on a throwaway Postgres (CI does this on every push):
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres npm run test:db
+```
 
 ## Deploying
 
@@ -88,7 +94,7 @@ Row-level security is on for every table: anyone can read published charts; only
 ### Docker
 
 ```dockerfile
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -103,4 +109,14 @@ CMD ["npm", "start"]
 - Custom chart types are declarative JSON (PlotSpec), validated and rendered as React elements — no user or AI code ever runs.
 - Share links keep the chart inside the URL fragment (`#d=…`), which browsers never send to the server.
 - Security headers (CSP, frame, referrer, permissions) are set in `next.config.ts`.
-- The AI routes validate inputs (prompt ≤ 2,000 chars, images ≤ 4 MB of PNG/JPEG/WebP/GIF, request ≤ 6 MB) and are rate limited. The in-memory limiter is per server instance; put a shared store in front for strict global limits.
+- Every chart that comes from outside (share links, files, the gallery database, local storage) is type-checked and size-limited before it's rendered; compressed share links are capped at 10 MB once decompressed.
+- The AI routes validate inputs (prompt ≤ 2,000 chars, images ≤ 4 MB of PNG/JPEG/WebP/GIF, request ≤ 6 MB, read as a stream) and are rate limited — each call to Claude, including the automatic repair round, costs one request. The in-memory limiter is per server instance; put a shared store in front for strict global limits. Client IPs come from your host's own header (`x-nf-client-connection-ip` on Netlify, `x-vercel-forwarded-for` on Vercel, `x-real-ip` behind nginx) before the spoofable `X-Forwarded-For`.
+
+### Before you open AI to the public
+
+An open AI endpoint spends your Anthropic credits. For a public deployment:
+
+1. **Set a spend limit** for the API key in the Anthropic Console (*Settings → Limits*) — the hard ceiling no matter what.
+2. **Require sign-in** (`AI_REQUIRE_AUTH=true`, the default when Supabase is configured) so limits apply per account instead of per IP.
+3. Keep `AI_RATE_LIMIT_PER_HOUR` modest (the default is 20) and consider a cheaper model (`ANTHROPIC_MODEL=claude-sonnet-5-5`) or lower `AI_EFFORT`.
+4. Watch usage in the Console for the first days after launch.

@@ -108,7 +108,14 @@ export function ExportMenu({ doc, def, onImport }: Props) {
               <button className="menu-item" type="button" data-testid="export-svg" onClick={() => { close(); run(async () => { await downloadSVG(doc, def, opts); toast(t("export.done", { name: `${fileBase(doc)}.svg` })); }); }}>
                 <IconVector /> <span><strong>{t("export.svg")}</strong><span className="sub">{t("export.svgHint")}</span></span>
               </button>
-              <button className="menu-item" type="button" onClick={() => { close(); run(async () => { if (!(await printPDF(doc, def, opts))) toast(t("export.popupBlocked"), "error"); }); }}>
+              <button className="menu-item" type="button" onClick={() => {
+                  close();
+                  // Open the window now, while we still have the click's user activation.
+                  const w = window.open("", "_blank");
+                  run(async () => {
+                    if (!(await printPDF(doc, def, opts, w))) toast(t("export.popupBlocked"), "error");
+                  });
+                }}>
                 <IconPrinter /> <span><strong>{t("export.pdf")}</strong><span className="sub">{t("export.pdfHint")}</span></span>
               </button>
               <div className="menu-sep" />
@@ -140,9 +147,9 @@ export function ExportMenu({ doc, def, onImport }: Props) {
                       toast(t("export.linkTooLong"), "error");
                       return;
                     }
-                    await navigator.clipboard?.writeText(url).catch(() => undefined);
-                    window.history.replaceState(null, "", url.slice(window.location.origin.length));
-                    toast(t("export.copiedLink"));
+                    const copied = await navigator.clipboard?.writeText(url).then(() => true, () => false);
+                    if (copied) toast(t("export.copiedLink"));
+                    else window.prompt(t("export.copyLinkPrompt"), url);
                   });
                 }}
               >

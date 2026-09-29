@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { autoMap, inferColumns, mappingIssues, parseNumber, type MappingIssue } from "./data";
+import { autoMap, inferColumns, MAX_COLUMNS, MAX_ROWS, mappingIssues, parseNumber, RESERVED_KEYS, type MappingIssue } from "./data";
 import { formatTick, formatValue } from "./format";
 import { EmptyState } from "./parts";
 import { textWidth, truncate, withMeasureFactor, wrapText } from "./text";
@@ -9,9 +9,11 @@ import type {
   ChartDefinition,
   ChartDoc,
   ChartStyle,
+  ColumnInfo,
   DataRow,
   LegendItem,
   LText,
+  Mapping,
   OptionValues,
   RenderContext,
   ResolvedTheme,
@@ -414,24 +416,105 @@ function layoutLegend(items: LegendItem[], maxW: number, size: number, u: number
 }
 
 /** Convenience: ensures a doc has valid dimensions and known fields. */
-export function sanitizeDoc(doc: ChartDoc): ChartDoc {
-  const style = { ...defaultStyle(), ...doc.style, number: { ...defaultStyle().number, ...(doc.style?.number ?? {}) } };
-  style.width = clampInt(style.width, 320, 4000, 1200);
-  style.height = clampInt(style.height, 320, 4000, 675);
-  style.fontScale = Math.min(1.6, Math.max(0.6, Number(style.fontScale) || 1));
-  style.corners = Math.min(24, Math.max(0, Number(style.corners) || 0));
-  const data = Array.isArray(doc.data) ? doc.data : [];
+const isPlainObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
+const MAX_TEXT = 2000;
+const text = (v: unknown, max = MAX_TEXT) => (typeof v === "string" ? v.slice(0, max) : typeof v === "number" && Number.isFinite(v) ? String(v) : "");
+const idOrNull = (v: unknown) => (typeof v === "string" && v.length > 0 && v.length <= 64 ? v : null);
+const oneOf = <T extends string>(v: unknown, allowed: readonly T[], fallback: T): T => (allowed.includes(v as T) ? (v as T) : fallback);
+const bool = (v: unknown, fallback: boolean) => (typeof v === "boolean" ? v : fallback);
+
+function sanitizeCell(v: unknown): DataRow[string] {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  if (typeof v === "string") return v.slice(0, MAX_TEXT);
+  if (typeof v === "boolean") return String(v);
+  return null;
+}
+
+/**
+ * Makes any document (share link, file, database row, localStorage) safe to
+ * render: every field is type-checked, sizes are clamped and unknown shapes are
+ * dropped. Never throws.
+ */
+export function sanitizeDoc(input: ChartDoc): ChartDoc {
+  const doc = (isPlainObject(input) ? input : {}) as Partial<Record<keyof ChartDoc, unknown>>;
+  const base = defaultStyle();
+  const st = isPlainObject(doc.style) ? doc.style : {};
+  const nf = isPlainObject(st.number) ? st.number : {};
+  const decimals = Number(nf.decimals);
+  const style: ChartStyle = {
+    theme: idOrNull(st.theme) ?? base.theme,
+    palette: idOrNull(st.palette),
+    accent: idOrNull(st.accent),
+    background: idOrNull(st.background),
+    fonts: idOrNull(st.fonts),
+    size: idOrNull(st.size) ?? (st.width || st.height ? "custom" : base.size),
+    width: clampInt(st.width, 320, 4000, base.width),
+    height: clampInt(st.height, 320, 4000, base.height),
+    fontScale: Math.min(1.6, Math.max(0.6, Number(st.fontScale) || 1)),
+    grid: bool(st.grid, base.grid),
+    labels: bool(st.labels, base.labels),
+    legend: oneOf(st.legend, ["top", "bottom", "none"] as const, base.legend),
+    titleAlign: oneOf(st.titleAlign, ["left", "center"] as const, base.titleAlign),
+    corners: Math.min(24, Math.max(0, Number(st.corners) || 0)),
+    number: {
+      decimals: nf.decimals === null || nf.decimals === undefined || !Number.isFinite(decimals) ? null : Math.min(8, Math.max(0, Math.round(decimals))),
+      compact: bool(nf.compact, base.number.compact),
+      prefix: text(nf.prefix, 12),
+      suffix: text(nf.suffix, 12),
+      locale: typeof nf.locale === "string" && /^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/.test(nf.locale) ? nf.locale : base.number.locale,
+    },
+    branding: bool(st.branding, base.branding),
+  };
+
+  const data: DataRow[] = [];
+  if (Array.isArray(doc.data)) {
+    for (const r of doc.data.slice(0, MAX_ROWS)) {
+      if (!isPlainObject(r)) continue;
+      const row: DataRow = {};
+      for (const [k, v] of Object.entries(r).slice(0, MAX_COLUMNS)) if (!RESERVED_KEYS.has(k)) row[k] = sanitizeCell(v);
+      data.push(row);
+    }
+  }
+
+  const seen = new Set<string>();
+  const columns: ColumnInfo[] = [];
+  if (Array.isArray(doc.columns)) {
+    for (const c of doc.columns.slice(0, MAX_COLUMNS)) {
+      if (!isPlainObject(c) || typeof c.name !== "string" || !c.name || seen.has(c.name) || RESERVED_KEYS.has(c.name)) continue;
+      seen.add(c.name);
+      columns.push({ name: c.name.slice(0, 200), type: oneOf(c.type, ["string", "number", "date"] as const, "string") });
+    }
+  }
+
+  const mapping: Mapping = {};
+  if (isPlainObject(doc.mapping)) {
+    for (const [k, v] of Object.entries(doc.mapping)) {
+      if (RESERVED_KEYS.has(k)) continue;
+      if (typeof v === "string") mapping[k] = v;
+      else if (Array.isArray(v)) mapping[k] = v.filter((x): x is string => typeof x === "string").slice(0, MAX_COLUMNS);
+    }
+  }
+  const options: OptionValues = {};
+  if (isPlainObject(doc.options)) {
+    for (const [k, v] of Object.entries(doc.options)) {
+      if (RESERVED_KEYS.has(k)) continue;
+      if (typeof v === "string") options[k] = v.slice(0, 200);
+      else if (typeof v === "boolean" || (typeof v === "number" && Number.isFinite(v))) options[k] = v;
+    }
+  }
+
   return {
     version: 1,
-    chartType: String(doc.chartType ?? "bar"),
-    title: String(doc.title ?? ""),
-    subtitle: String(doc.subtitle ?? ""),
-    source: String(doc.source ?? ""),
-    note: String(doc.note ?? ""),
-    columns: Array.isArray(doc.columns) && doc.columns.length ? doc.columns : inferColumns(data),
+    chartType: text(doc.chartType, 120) || "bar",
+    title: text(doc.title),
+    subtitle: text(doc.subtitle),
+    source: text(doc.source),
+    note: text(doc.note),
+    columns: columns.length ? columns : inferColumns(data),
     data,
-    mapping: doc.mapping && typeof doc.mapping === "object" ? doc.mapping : {},
-    options: doc.options && typeof doc.options === "object" ? doc.options : {},
+    mapping,
+    options,
     style,
   };
 }

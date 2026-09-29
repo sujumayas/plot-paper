@@ -22,5 +22,19 @@ export async function renderGuide(slug: GuideSlug): Promise<{ title: string; htm
     const entry = Object.entries(GUIDES).find(([, v]) => v.file === `${name}.md`);
     return entry ? `](/guide${entry[0] ? "/" + entry[0] : ""}${hash})` : m;
   });
-  return { title: g.title, html: await marked.parse(linked, { gfm: true }) };
+  const html = await marked.parse(linked, { gfm: true });
+  // GitHub-style heading ids so `#section` links work in the app too.
+  const withIds = html.replace(/<h([2-4])>(.*?)<\/h\1>/g, (_m, level: string, inner: string) => `<h${level} id="${headingId(inner)}">${inner}</h${level}>`);
+  return { title: g.title, html: withIds };
+}
+
+/** "Before you open AI to the public" → "before-you-open-ai-to-the-public" (like GitHub). */
+export function headingId(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, "")
+    .replace(/&[a-z]+;|&#\d+;/gi, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\p{L}\p{N}\s-]/gu, "")
+    .replace(/\s/g, "-");
 }

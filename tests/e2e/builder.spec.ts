@@ -91,19 +91,147 @@ test("the draft survives a reload", async ({ page }) => {
   await expect(await posterSvg(page)).toContainText("Persist me please");
 });
 
-test("share links reopen the same chart elsewhere", async ({ page, browser }) => {
+test("share links reopen the same chart elsewhere", async ({ page, browser, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await openBuilder(page, "?type=donut");
+  await expect(page).toHaveURL(/\/build$/); // one-shot parameters are dropped
   await page.locator('[data-tab="chart"]').click();
   await page.locator("#f-title").fill("Shared donut");
   await page.getByTestId("export-menu").click();
   await page.getByTestId("copy-link").click();
-  await expect(page).toHaveURL(/#d=z/);
-  const url = page.url();
+  await toast(page, /link copied/);
+  const url = await page.evaluate(() => navigator.clipboard.readText());
+  expect(url).toMatch(/\/build#d=z/);
+  await expect(page).toHaveURL(/\/build$/); // the address bar isn't rewritten
   const other = await browser.newPage();
   await other.goto(url);
   await expect(other.locator(".toast").first()).toContainText("shared chart");
   await expect(other.getByTestId("poster").locator("svg")).toContainText("Shared donut");
   await other.close();
+});
+
+test.describe("links never destroy the saved draft", () => {
+  const typeTitle = async (page: import("@playwright/test").Page, title: string) => {
+    await page.locator('[data-tab="chart"]').click();
+    await page.locator("#f-title").fill(title);
+    await page.waitForTimeout(700); // autosave
+  };
+
+  test("opening ?type= on top of a draft can be undone", async ({ page }) => {
+    await openBuilder(page);
+    await typeTitle(page, "My precious draft");
+    await openBuilder(page, "?type=pie");
+    await expect(page).toHaveURL(/\/build$/);
+    await toast(page, /Undo/);
+    await expect(page.locator('[data-chart="pie"]')).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Undo", exact: true }).click();
+    await expect(await posterSvg(page)).toContainText("My precious draft");
+  });
+
+  test("reloading after opening an example keeps later edits", async ({ page }) => {
+    await openBuilder(page, "?example=seattle-temperature-by-month");
+    await expect(page).toHaveURL(/\/build$/);
+    await typeTitle(page, "Edited example");
+    await page.reload();
+    await expect(page.locator(".builder[data-ready=true]")).toBeVisible();
+    await expect(await posterSvg(page)).toContainText("Edited example");
+  });
+
+  test("a share link opens on top of the draft; undo brings the draft back", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await openBuilder(page, "?type=donut");
+    await typeTitle(page, "Shared thing");
+    await page.getByTestId("export-menu").click();
+    await page.getByTestId("copy-link").click();
+    await toast(page, /link copied/);
+    const url = await page.evaluate(() => navigator.clipboard.readText());
+    await typeTitle(page, "Newer local work");
+    await page.goto(url);
+    await expect(page.locator(".builder[data-ready=true]")).toBeVisible();
+    await expect(await posterSvg(page)).toContainText("Shared thing");
+    await expect(page).toHaveURL(/\/build$/);
+    await page.getByRole("button", { name: "Undo", exact: true }).click();
+    await expect(await posterSvg(page)).toContainText("Newer local work");
+  });
+
+  test("a remix handed over through the session opens and installs its custom type", async ({ page }) => {
+    await openBuilder(page);
+    await typeTitle(page, "Keep me");
+    await page.evaluate(async () => {
+      const spec = {
+        version: 1,
+        name: "Remixed dots",
+        fields: [
+          { key: "label", label: "Label", type: "string" },
+          { key: "value", label: "Value", type: "number" },
+        ],
+        layers: [{ mark: "point", encoding: { x: { field: "value", type: "linear" }, y: { field: "label", type: "band" } } }],
+        sample: { rows: [{ label: "A", value: 1 }, { label: "B", value: 3 }] },
+      };
+      const doc = {
+        version: 1, chartType: "custom:someone-elses", title: "Community remix", subtitle: "", source: "", note: "",
+        columns: [{ name: "label", type: "string" }, { name: "value", type: "number" }],
+        data: [{ label: "A", value: 1 }, { label: "B", value: 3 }],
+        mapping: { label: "label", value: "value" }, options: {}, style: { width: 1200, height: 675 },
+      };
+      sessionStorage.setItem("pp-incoming-v1", JSON.stringify({ doc, spec }));
+    });
+    await openBuilder(page, "?incoming=1");
+    await expect(await posterSvg(page)).toContainText("Community remix");
+    await expect(page.locator('[data-chart^="custom:"]').first()).toBeVisible();
+    await expect(page.locator(".alert.warn")).toHaveCount(0);
+    await page.getByRole("button", { name: "Undo", exact: true }).click();
+    await expect(await posterSvg(page)).toContainText("Keep me");
+  });
+});
+
+test.describe("editing inputs", () => {
+  test("Escape discards a cell edit", async ({ page }) => {
+    await openBuilder(page);
+    const cell = page.getByLabel("orders 1", { exact: true });
+    const before = await cell.inputValue();
+    await cell.click();
+    await cell.fill("999999");
+    await cell.press("Escape");
+    await expect(cell).toHaveValue(before);
+    await expect(await posterSvg(page)).not.toContainText("999,999");
+  });
+
+  test("Escape discards a column rename", async ({ page }) => {
+    await openBuilder(page);
+    const header = page.getByLabel(/: orders$/);
+    await header.click();
+    await header.fill("renamed");
+    await header.press("Escape");
+    await expect(page.getByLabel(/: orders$/)).toHaveValue("orders");
+  });
+
+  test("width can be typed digit by digit and is clamped on blur", async ({ page }) => {
+    await openBuilder(page);
+    await page.locator('[data-tab="style"]').click();
+    const w = page.locator("#w");
+    await w.click();
+    await w.press("ControlOrMeta+a");
+    await w.pressSequentially("1000");
+    await expect(await posterSvg(page)).toHaveAttribute("width", "1000");
+    await w.press("ControlOrMeta+a");
+    await w.pressSequentially("5");
+    await w.blur();
+    await expect(w).toHaveValue("320");
+    await expect(await posterSvg(page)).toHaveAttribute("width", "320");
+  });
+
+  test("Ctrl+S while typing exports the latest text", async ({ page }) => {
+    await openBuilder(page);
+    const cell = page.getByLabel("drink 1", { exact: true });
+    await cell.click();
+    await cell.fill("Matcha");
+    const download = page.waitForEvent("download");
+    await page.keyboard.press("Control+s");
+    await download;
+    await expect(cell).toHaveValue("Matcha");
+    await expect(await posterSvg(page)).toContainText("Matcha");
+  });
 });
 
 test("paste from a spreadsheet", async ({ page }) => {

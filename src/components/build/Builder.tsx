@@ -7,12 +7,13 @@ import { IconAlert, IconRedo, IconUndo } from "@/components/icons";
 import { usePoster } from "@/components/chart/Poster";
 import { useToast } from "@/components/ui/Toasts";
 import { useHistory } from "@/hooks/useHistory";
-import { useChartRegistry } from "@/lib/customTypes";
+import { CUSTOM_PREFIX, useChartRegistry } from "@/lib/customTypes";
 import { exampleToDoc, type RawExample } from "@/lib/examples";
 import { EXAMPLE_LOADERS } from "@/lib/examples/loaders";
 import { useI18n } from "@/lib/i18n";
 import { decodeDoc } from "@/lib/share";
 import { KEYS, readJSON, writeJSON } from "@/lib/storage";
+import { takeIncoming } from "@/lib/incoming";
 import { barChart } from "@/lib/viz/charts/bars";
 import { autoMap, inferColumns, parseJSONRows } from "@/lib/viz/data";
 import { withData } from "@/lib/viz/docOps";
@@ -52,50 +53,83 @@ export function Builder() {
 
   const update = useCallback((fn: (d: ChartDoc) => ChartDoc, coalesce?: string) => history.set(fn, { coalesce }), [history]);
 
-  // ── Initial load: share link > example > chart type > local draft > default
+  // ── Initial load. The autosaved draft is always restored first; a share link,
+  // remix, example or `?type=` then opens on top of it as an undoable step, so
+  // following a link never silently destroys unsaved work.
   useEffect(() => {
     if (!registry.loaded || loadStarted.current) return;
     loadStarted.current = true;
     (async () => {
+      const raw = readJSON<ChartDoc | null>(KEYS.doc, null);
+      const saved = raw && typeof raw === "object" && Array.isArray(raw.data) ? sanitizeDoc(raw) : null;
+      let incoming: ChartDoc | null = null;
+      let message = "";
+
       const hash = window.location.hash;
-      if (hash.startsWith("#d=")) {
-        const shared = await decodeDoc(hash.slice(3));
-        if (shared) {
-          history.reset(shared);
-          toast(t("builder.loadedShare"));
-        } else toast(t("builder.shareInvalid"), "error");
-        setReady(true);
-        return;
-      }
       const example = search.get("example");
-      if (example && EXAMPLE_LOADERS[example]) {
+      const type = search.get("type");
+      const fromURL = hash.startsWith("#d=") || search.has("incoming") || !!example || !!type;
+      if (hash.startsWith("#d=")) {
+        incoming = await decodeDoc(hash.slice(3));
+        if (incoming) message = t("builder.loadedShare");
+        else toast(t("builder.shareInvalid"), "error");
+      } else if (search.has("incoming")) {
+        const handoff = takeIncoming();
+        if (handoff) {
+          incoming = handoff.doc;
+          if (handoff.spec && !registry.get(incoming.chartType)) {
+            // A community chart made with a custom type: install the type locally.
+            const item = registry.upsert(handoff.spec, { origin: "import" });
+            incoming = { ...incoming, chartType: CUSTOM_PREFIX + item.id };
+          }
+          message = t("builder.loadedExample", { title: incoming.title || l(registry.get(incoming.chartType)?.name ?? barChart.name) });
+        }
+      } else if (example && EXAMPLE_LOADERS[example]) {
         try {
           const mod = await EXAMPLE_LOADERS[example]();
-          const d = exampleToDoc(mod.default as RawExample);
-          history.reset(d);
-          toast(t("builder.loadedExample", { title: d.title }));
-          setReady(true);
-          return;
+          incoming = exampleToDoc(mod.default as RawExample);
+          message = t("builder.loadedExample", { title: incoming.title });
         } catch {
-          /* fall through */
+          /* fall through to the draft */
         }
+      } else if (type) {
+        const typeDef = registry.get(type);
+        if (typeDef) incoming = defaultDoc(typeDef, locale);
       }
-      const type = search.get("type");
-      const typeDef = type ? registry.get(type) : undefined;
-      if (typeDef) {
-        history.reset(defaultDoc(typeDef, locale));
-        setReady(true);
-        return;
+      // Drop the one-shot parameters so a reload doesn't re-open them over later edits.
+      if (fromURL) window.history.replaceState(window.history.state, "", "/build");
+
+      if (saved) history.reset(saved);
+      if (incoming) {
+        if (saved) {
+          history.set(incoming);
+          message = message ? `${message}. ${t("builder.undoRestores")}` : t("builder.undoRestores");
+        } else history.reset(incoming);
       }
-      const saved = readJSON<ChartDoc | null>(KEYS.doc, null);
-      if (saved && typeof saved === "object" && Array.isArray(saved.data)) {
-        history.reset(sanitizeDoc(saved));
-      }
+      if (message) toast(message);
       setReady(true);
     })();
     // Runs once, after custom types are loaded (`type=custom:…` needs them).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [registry.loaded]);
+
+  // ── A share link pasted into a tab that is already on /build only changes the hash.
+  useEffect(() => {
+    if (!ready) return;
+    const onHash = async () => {
+      if (!window.location.hash.startsWith("#d=")) return;
+      const shared = await decodeDoc(window.location.hash.slice(3));
+      window.history.replaceState(window.history.state, "", "/build");
+      if (!shared) {
+        toast(t("builder.shareInvalid"), "error");
+        return;
+      }
+      history.set(shared);
+      toast(`${t("builder.loadedShare")}. ${t("builder.undoRestores")}`);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [ready, history, toast, t]);
 
   // ── Autosave
   useEffect(() => {
@@ -115,9 +149,11 @@ export function Builder() {
     const onKey = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
       if (mod && e.key.toLowerCase() === "s") {
-        // ⌘S / Ctrl+S downloads the PNG instead of saving the web page.
+        // ⌘S / Ctrl+S downloads the PNG instead of saving the web page. Blur first so a
+        // field being edited commits its draft, then export once React has re-rendered.
         e.preventDefault();
-        window.dispatchEvent(new Event("pp:export-png"));
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+        setTimeout(() => window.dispatchEvent(new Event("pp:export-png")), 50);
         return;
       }
       const el = e.target as HTMLElement;

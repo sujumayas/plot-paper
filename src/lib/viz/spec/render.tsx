@@ -473,11 +473,13 @@ function renderLayer(layer: Layer, data: Rec[], env: LayerEnv): ReactNode {
     if (n === null) return String(v);
     return st.format === "percent" ? formatPercent(n, Math.abs(n) < 0.1 ? 1 : 0) : st.format === "raw" ? String(n) : c.fmt(n);
   };
+  // Largest size value, computed once per layer (not once per mark).
+  let sizeMax = 1;
+  if (enc.size?.field) for (const d of data) sizeMax = Math.max(sizeMax, getNum(d, enc.size) ?? 0);
   const sizeOf = (r: Rec, fallback: number) => {
     if (enc.size?.field) {
       const v = getNum(r, enc.size);
-      const max = Math.max(...data.map((d) => getNum(d, enc.size) ?? 0), 1);
-      return v === null || v <= 0 ? 0 : Math.sqrt(v / max) * (st.size ?? 24) * u + 2 * u;
+      return v === null || v <= 0 ? 0 : Math.sqrt(v / sizeMax) * (st.size ?? 24) * u + 2 * u;
     }
     const v = enc.size ? getNum(r, enc.size) : null;
     return (v ?? st.size ?? fallback) * u;

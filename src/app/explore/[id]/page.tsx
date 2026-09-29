@@ -15,11 +15,11 @@ type Params = Promise<{ id: string }>;
 async function load(id: string) {
   if (id.startsWith("g-")) {
     const c = await getCommunityChart(id.slice(2));
-    return c ? { doc: c.doc, def: c.def, description: c.doc.subtitle, author: c.author, sourceUrl: "", tags: [] as string[], exampleId: null as string | null } : null;
+    return c ? { doc: c.doc, def: c.def, spec: c.spec as unknown, description: c.doc.subtitle, author: c.author, sourceUrl: "", tags: [] as string[], exampleId: null as string | null } : null;
   }
   const e = getExample(id);
   if (!e) return null;
-  return { doc: e.doc, def: resolveDefinition(e.doc.chartType), description: e.description, author: e.author, sourceUrl: e.sourceUrl, tags: e.tags, exampleId: e.id };
+  return { doc: e.doc, def: resolveDefinition(e.doc.chartType), spec: null as unknown, description: e.description, author: e.author, sourceUrl: e.sourceUrl, tags: e.tags, exampleId: e.id };
 }
 
 export function generateStaticParams() {
@@ -75,7 +75,7 @@ export default async function ExampleDetail({ params }: { params: Params }) {
                 ))}
               </div>
             )}
-            <ExampleActions doc={doc} exampleId={item.exampleId} spec={null} />
+            <ExampleActions doc={doc} exampleId={item.exampleId} spec={item.spec} />
           </div>
         </div>
       </div>

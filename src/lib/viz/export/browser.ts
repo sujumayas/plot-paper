@@ -82,11 +82,21 @@ export async function copyPNG(doc: ChartDoc, def: ChartDefinition, opts: ExportO
   }
 }
 
-/** Opens a print-ready page sized to the chart; the user saves it as PDF. */
-export async function printPDF(doc: ChartDoc, def: ChartDefinition, opts: ExportOptions = {}): Promise<boolean> {
-  const svg = (await buildSVG(doc, def, opts)).replace(/^<\?xml[^>]*>\s*/, "");
-  const w = window.open("", "_blank");
+/**
+ * Opens a print-ready page sized to the chart; the user saves it as PDF.
+ * Pass a window opened synchronously in the click handler (`window.open("", "_blank")`):
+ * popup blockers reject windows opened after an `await`.
+ */
+export async function printPDF(doc: ChartDoc, def: ChartDefinition, opts: ExportOptions = {}, target?: Window | null): Promise<boolean> {
+  const w = target === undefined ? window.open("", "_blank") : target;
   if (!w) return false;
+  let svg: string;
+  try {
+    svg = (await buildSVG(doc, def, opts)).replace(/^<\?xml[^>]*>\s*/, "");
+  } catch (err) {
+    w.close();
+    throw err;
+  }
   const { width, height } = doc.style;
   const title = (doc.title || "Chart").replace(/[<>&]/g, "");
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title>

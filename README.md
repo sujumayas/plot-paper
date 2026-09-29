@@ -69,8 +69,9 @@ A chart is a document (`ChartDoc`: data + column mapping + options + style + tex
 | Command | |
 |---|---|
 | `npm run dev` / `build` / `start` | Next.js |
-| `npm test` | Unit tests (≈600) |
+| `npm test` | Unit tests (≈640) |
 | `npm run test:e2e` | Playwright end-to-end tests (builds and starts the app with the mock AI) |
+| `npm run test:db` | Apply the Supabase migrations to a throwaway Postgres and test row-level security (`DATABASE_URL=…`) |
 | `npm run lint` / `typecheck` | ESLint / TypeScript |
 | `npm run render:gallery -- [--examples] [--theme midnight] [--size 1080x1350] [--only bar,line]` | Render charts to `.render/*.png` for visual review |
 | `npm run gen:examples` | Rebuild the examples manifest after adding a dataset |

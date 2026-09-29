@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useRef, useState } from "react";
+import { memo, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { IconDownload, IconPlus, IconSparkle, IconTrash, IconUpload } from "@/components/icons";
 import { useToast } from "@/components/ui/Toasts";
 import { downloadText } from "@/lib/download";
@@ -225,43 +225,43 @@ function DataGrid({ doc, update }: { doc: ChartDoc; update: Props["update"] }) {
   );
 }
 
-const Cell = memo(function Cell({ value, onCommit, label }: { value: Cell; onCommit: (raw: string) => void; label: string }) {
-  const shown = value === null || value === undefined ? "" : String(value);
+/**
+ * A text input that edits a draft and commits on blur/Enter. Escape discards the
+ * draft (a ref, because blur() fires synchronously before the state update lands).
+ */
+function useDraftInput(shown: string, commit: (draft: string) => void) {
   const [draft, setDraft] = useState<string | null>(null);
-  return (
-    <input
-      value={draft ?? shown}
-      aria-label={label}
-      onFocus={() => setDraft(shown)}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={() => {
-        if (draft !== null && draft !== shown) onCommit(draft);
-        setDraft(null);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-        if (e.key === "Escape") {
-          setDraft(null);
-          (e.target as HTMLInputElement).blur();
-        }
-      }}
-    />
-  );
+  const cancelled = useRef(false);
+  return {
+    value: draft ?? shown,
+    onFocus: () => {
+      cancelled.current = false;
+      setDraft(shown);
+    },
+    onChange: (e: ChangeEvent<HTMLInputElement>) => setDraft(e.target.value),
+    onBlur: () => {
+      if (!cancelled.current && draft !== null && draft !== shown) commit(draft);
+      cancelled.current = false;
+      setDraft(null);
+    },
+    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") e.currentTarget.blur();
+      else if (e.key === "Escape") {
+        cancelled.current = true;
+        e.currentTarget.blur();
+      }
+    },
+  };
+}
+
+const Cell = memo(function Cell({ value, onCommit, label }: { value: Cell; onCommit: (raw: string) => void; label: string }) {
+  const input = useDraftInput(value === null || value === undefined ? "" : String(value), onCommit);
+  return <input {...input} aria-label={label} />;
 });
 
 function HeaderCell({ name, onCommit, label }: { name: string; onCommit: (to: string) => void; label: string }) {
-  const [draft, setDraft] = useState<string | null>(null);
-  return (
-    <input
-      value={draft ?? name}
-      aria-label={`${label}: ${name}`}
-      onFocus={() => setDraft(name)}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={() => {
-        if (draft !== null && draft.trim() && draft !== name) onCommit(draft);
-        setDraft(null);
-      }}
-      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-    />
-  );
+  const input = useDraftInput(name, (draft) => {
+    if (draft.trim()) onCommit(draft);
+  });
+  return <input {...input} aria-label={`${label}: ${name}`} />;
 }

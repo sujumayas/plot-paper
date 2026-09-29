@@ -16,7 +16,14 @@ const limiter = new RateLimiter(config.rateLimitPerHour);
 /** Production dependencies for the AI route handlers. */
 export async function aiDeps(): Promise<Deps> {
   const h = await headers();
-  const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "local";
+  // Prefer headers set by the hosting platform (they can't be spoofed by the client);
+  // the first X-Forwarded-For entry is client-controlled, so it comes last.
+  const ip =
+    h.get("x-nf-client-connection-ip")?.trim() ||
+    h.get("x-vercel-forwarded-for")?.split(",")[0].trim() ||
+    h.get("x-real-ip")?.trim() ||
+    (h.get("x-forwarded-for") ?? "").split(",")[0].trim() ||
+    "local";
   return {
     config,
     provider,

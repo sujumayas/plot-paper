@@ -31,18 +31,17 @@ export function parseNumber(v: Cell | boolean, decimal?: "." | ","): number | nu
     s = s.slice(1, -1);
   }
   s = s.replace(/[−‒–]/g, "-"); // unicode minus / dashes
-  // Strip currency symbols, codes and whitespace (incl. non-breaking & thin spaces).
-  s = s.replace(/[\s  ]/g, "");
-  // Currency symbols and uppercase ISO codes (USD, PEN, EUR…), before or after.
-  s = s.replace(/^(?:US\$|R\$|S\/|[A-Z]{3}|[$€£¥₹₩₽₺₫₱฿])/, "");
-  s = s.replace(/(?:[$€£¥₹₩₽₺₫₱฿]|[A-Z]{3})$/, "");
+  // Currency symbols and known ISO codes (USD, PEN, EUR…), before or after, then
+  // whitespace (incl. non-breaking & thin spaces).
+  s = s.replace(CURRENCY_PREFIX, "").replace(CURRENCY_SUFFIX, "");
+  s = s.replace(/[\s\u00a0\u2009\u202f]/g, "");
   if (s.startsWith("-")) {
     negative = !negative;
     s = s.slice(1);
   } else if (s.startsWith("+")) {
     s = s.slice(1);
   }
-  s = s.replace(/^(?:[$€£¥₹]|S\/)/, "");
+  s = s.replace(CURRENCY_PREFIX, "");
 
   let mult = 1;
   const suffix = s.match(/([kmbt%])$/i);
@@ -53,28 +52,52 @@ export function parseNumber(v: Cell | boolean, decimal?: "." | ","): number | nu
   }
   if (s === "" || !/^[\d.,]*\d[\d.,]*(?:e[+-]?\d+)?$/i.test(s)) return null;
 
-  const hasComma = s.includes(",");
-  const hasDot = s.includes(".");
-  if (decimal === ",") {
-    s = s.replace(/\./g, "").replace(",", ".");
-  } else if (decimal === "." ) {
-    s = s.replace(/,/g, "");
-  } else if (hasComma && hasDot) {
-    // Whichever separator comes last is the decimal separator.
-    if (s.lastIndexOf(",") > s.lastIndexOf(".")) s = s.replace(/\./g, "").replace(",", ".");
-    else s = s.replace(/,/g, "");
-  } else if (hasComma) {
-    const parts = s.split(",");
-    const thousands = parts.length > 2 || (parts.length === 2 && /^\d{1,3}$/.test(parts[0]) && /^\d{3}$/.test(parts[1]));
-    s = thousands ? s.replace(/,/g, "") : s.replace(",", ".");
-  } else if (hasDot) {
-    const parts = s.split(".");
-    if (parts.length > 2) s = s.replace(/\./g, ""); // 1.234.567
-  }
-  const n = Number(s);
+  const exp = s.match(/e[+-]?\d+$/i)?.[0] ?? "";
+  const body = s.slice(0, s.length - exp.length);
+  // The column's separator wins; values that contradict it fall back to a per-value guess.
+  const plain = (decimal ? toPlainNumber(body, decimal) : null) ?? toPlainNumber(body, guessDecimal(body));
+  if (plain === null) return null;
+  const n = Number(plain + exp);
   if (!Number.isFinite(n)) return null;
   const out = n * mult;
   return negative ? -out : out;
+}
+
+const CURRENCY_CODES =
+  "USD|EUR|GBP|JPY|CNY|CHF|CAD|AUD|NZD|HKD|SGD|INR|KRW|RUB|TRY|ZAR|SEK|NOK|DKK|PLN|CZK|HUF|MXN|BRL|ARS|CLP|COP|PEN|UYU|BOB|PYG|VES|DOP|GTQ|CRC";
+const CURRENCY_SYMBOLS = "$€£¥₹₩₽₺₫₱฿";
+const CURRENCY_PREFIX = new RegExp(`^(?:US\\$|R\\$|S\\/\\.?|(?:${CURRENCY_CODES})(?![A-Za-z])|[${CURRENCY_SYMBOLS}])\\s*`);
+const CURRENCY_SUFFIX = new RegExp(`\\s*(?:[${CURRENCY_SYMBOLS}]|(?<![A-Za-z])(?:${CURRENCY_CODES}))$`);
+
+/** Picks the decimal separator of a lone value ("1,234" → thousands, "1,5" → decimal). */
+function guessDecimal(body: string): "." | "," {
+  const comma = body.includes(",");
+  const dot = body.includes(".");
+  if (comma && dot) return body.lastIndexOf(",") > body.lastIndexOf(".") ? "," : ".";
+  if (comma) {
+    const parts = body.split(",");
+    return parts.length > 2 || (parts.length === 2 && /^\d{1,3}$/.test(parts[0]) && /^\d{3}$/.test(parts[1])) ? "." : ",";
+  }
+  if (dot && body.split(".").length > 2) return ","; // 1.234.567
+  return ".";
+}
+
+/**
+ * "1.234.567,5" with decimal "," → "1234567.5". Thousand separators must form
+ * proper groups of three, so "1.2.3" or "12,34,5" are rejected (null).
+ */
+function toPlainNumber(body: string, decimal: "." | ","): string | null {
+  const thousands = decimal === "." ? "," : ".";
+  const at = body.lastIndexOf(decimal);
+  let int = at < 0 ? body : body.slice(0, at);
+  const frac = at < 0 ? "" : body.slice(at + 1);
+  if (frac && !/^\d+$/.test(frac)) return null;
+  if (int.includes(thousands)) {
+    if (!(thousands === "," ? /^\d{1,3}(?:,\d{3})+$/ : /^\d{1,3}(?:\.\d{3})+$/).test(int)) return null;
+    int = int.split(thousands).join("");
+  } else if (int && !/^\d+$/.test(int)) return null;
+  if (!int && !frac) return null;
+  return `${int || "0"}${frac ? `.${frac}` : ""}`;
 }
 
 /**
@@ -107,13 +130,16 @@ export type ParsedTable = {
 };
 
 export const MAX_ROWS = 50_000;
+/** Delimiter returned for single-column text; it never appears in real data. */
+export const SINGLE_COLUMN = "\u001f";
 export const MAX_COLUMNS = 200;
 
 export function detectDelimiter(text: string): string {
   const sample = text.slice(0, 10_000).split(/\r?\n/).slice(0, 20).filter((l) => l.trim());
   if (!sample.length) return ",";
   const candidates = [",", ";", "\t", "|"];
-  let best = ",";
+  // No candidate in the header → a single column (don't split "1,234" values).
+  let best = SINGLE_COLUMN;
   let bestScore = -1;
   for (const d of candidates) {
     const counts = sample.map((line) => countOutsideQuotes(line, d));
@@ -204,13 +230,21 @@ export function parseDelimited(input: string, delimiter?: string): ParsedTable {
   return { headers, rows: out, delimiter: d, warnings };
 }
 
-function dedupeHeaders(headers: string[]): string[] {
-  const seen = new Map<string, number>();
+/** Keys that would clash with JavaScript object internals if used as column names. */
+export const RESERVED_KEYS: ReadonlySet<string> = new Set(["__proto__", "constructor", "prototype"]);
+
+/** Makes a column name safe to use as an object key ("__proto__" → "__proto___col"). */
+export const safeKey = (name: string) => (RESERVED_KEYS.has(name) ? `${name}_col` : name);
+
+/** Unique, non-empty, safe column names: ["a", "a", "a_2"] → ["a", "a_2", "a_2_2"]. */
+export function dedupeHeaders(headers: string[]): string[] {
+  const used = new Set<string>();
   return headers.map((h, i) => {
-    const base = h || `column_${i + 1}`;
-    const n = seen.get(base) ?? 0;
-    seen.set(base, n + 1);
-    return n === 0 ? base : `${base}_${n + 1}`;
+    const base = safeKey(h || `column_${i + 1}`);
+    let name = base;
+    for (let n = 2; used.has(name); n++) name = `${base}_${n}`;
+    used.add(name);
+    return name;
   });
 }
 
@@ -228,7 +262,7 @@ export function toCSV(columns: string[], rows: DataRow[], delimiter = ","): stri
  * ───────────────────────────────────────────────────────────── */
 
 const DATE_RE =
-  /^(?:\d{4}-\d{1,2}(?:-\d{1,2})?(?:[T ]\d{1,2}:\d{2}(?::\d{2})?(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)?|\d{1,2}\/\d{1,2}\/\d{2,4})$/;
+  /^(?:\d{4}-\d{1,2}(?:-\d{1,2})?(?:[T ]\d{1,2}:\d{2}(?::\d{2})?(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)?|\d{1,2}[/.]\d{1,2}[/.]\d{2,4})$/;
 
 export function inferType(values: Cell[]): ColumnType {
   const present = values.filter((v) => v !== null && v !== undefined && String(v).trim() !== "");
@@ -273,7 +307,7 @@ export function inferColumns(rows: DataRow[], order?: string[]): ColumnInfo[] {
   const seen = new Set(names);
   for (const r of rows.slice(0, 1000)) {
     for (const k of Object.keys(r)) {
-      if (!seen.has(k)) {
+      if (!seen.has(k) && !RESERVED_KEYS.has(k)) {
         seen.add(k);
         names.push(k);
       }
@@ -310,8 +344,8 @@ export function parseJSONRows(text: string): { columns: ColumnInfo[]; rows: Data
     const o = parsed as Record<string, unknown>;
     if (Array.isArray(o.data)) rows = o.data;
     else if (Array.isArray(o.rows) && Array.isArray(o.columns)) {
-      const cols = (o.columns as unknown[]).map((c) =>
-        typeof c === "string" ? c : String((c as { name?: string })?.name ?? ""),
+      const cols = dedupeHeaders(
+        (o.columns as unknown[]).slice(0, MAX_COLUMNS).map((c) => (typeof c === "string" ? c : String((c as { name?: string })?.name ?? ""))),
       );
       rows = (o.rows as unknown[]).map((r) =>
         Array.isArray(r) ? Object.fromEntries(cols.map((c, i) => [c, r[i]])) : r,
@@ -324,8 +358,8 @@ export function parseJSONRows(text: string): { columns: ColumnInfo[]; rows: Data
     .slice(0, MAX_ROWS)
     .map((r) => {
       const o: DataRow = {};
-      for (const [k, v] of Object.entries(r)) {
-        o[k] = typeof v === "number" || typeof v === "string" || v === null ? v : v === undefined ? null : String(v);
+      for (const [k, v] of Object.entries(r).slice(0, MAX_COLUMNS)) {
+        o[safeKey(k)] = typeof v === "number" || typeof v === "string" || v === null ? v : v === undefined ? null : String(v);
       }
       return o;
     });
@@ -520,6 +554,17 @@ export function parseDate(v: Cell): number | null {
   if (/^\d{4}-\d{1,2}$/.test(s)) {
     const [y, m] = s.split("-").map(Number);
     return Date.UTC(y, m - 1, 1);
+  }
+  // 31/12/2024, 12/31/2024, 31.12.2024 (dots are day-first, as in Europe).
+  const dm = s.match(/^(\d{1,2})([/.])(\d{1,2})\2(\d{2,4})$/);
+  if (dm) {
+    const [a, b] = [Number(dm[1]), Number(dm[3])];
+    const dayFirst = dm[2] === "." || a > 12;
+    const [day, month] = dayFirst ? [a, b] : [b, a];
+    const y = Number(dm[4]);
+    const year = dm[4].length === 2 ? (y < 50 ? 2000 : 1900) + y : y;
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    return Date.UTC(year, month - 1, day);
   }
   const t = Date.parse(s);
   return Number.isNaN(t) ? null : t;

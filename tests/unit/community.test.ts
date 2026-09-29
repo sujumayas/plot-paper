@@ -68,6 +68,22 @@ describe("community charts", () => {
     expect(c.def.name).toBe("Bullet chart");
   });
 
+  it("skips rows that can't be read, caps data and exposes custom specs for remixing", async () => {
+    const { SPEC_TEMPLATES } = await import("@/lib/viz/spec/templates");
+    const exploding = row();
+    Object.defineProperty(exploding, "config", { get() { throw new Error("corrupt"); }, enumerable: true });
+    state.rows = [
+      exploding,
+      row({ data: Array.from({ length: 6000 }, (_, i) => ({ k: `k${i}`, v: i })) }),
+      row({ chart_type: "custom:abc", config: { spec: SPEC_TEMPLATES[0].spec } }),
+    ];
+    const list = await listCommunityCharts();
+    expect(list).toHaveLength(2);
+    expect(list[0].doc.data).toHaveLength(5000);
+    expect(list[0].spec).toBeNull();
+    expect(list[1].spec?.name).toBe(SPEC_TEMPLATES[0].spec.name);
+  });
+
   it("returns [] when Supabase is missing, erroring or unreachable", async () => {
     state.configured = false;
     expect(await listCommunityCharts()).toEqual([]);

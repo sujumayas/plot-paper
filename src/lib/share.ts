@@ -25,9 +25,30 @@ function fromBase64Url(s: string): Uint8Array {
   return out;
 }
 
-async function pipe(bytes: Uint8Array, stream: CompressionStream | DecompressionStream): Promise<Uint8Array> {
-  const res = new Response(new Blob([bytes as BlobPart]).stream().pipeThrough(stream));
-  return new Uint8Array(await res.arrayBuffer());
+/** Largest decompressed share payload we accept (a 60 KB link can't hold more than this honestly; it guards against zip bombs). */
+export const MAX_SHARE_BYTES = 10 * 1024 * 1024;
+
+async function pipe(bytes: Uint8Array, stream: CompressionStream | DecompressionStream, maxBytes = Infinity): Promise<Uint8Array> {
+  const reader = new Blob([bytes as BlobPart]).stream().pipeThrough(stream).getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel().catch(() => undefined);
+      throw new Error("payload too large");
+    }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let at = 0;
+  for (const c of chunks) {
+    out.set(c, at);
+    at += c.byteLength;
+  }
+  return out;
 }
 
 export async function encodeDoc(doc: ChartDoc): Promise<string> {
@@ -45,11 +66,12 @@ export async function encodeDoc(doc: ChartDoc): Promise<string> {
 export async function decodeDoc(token: string): Promise<ChartDoc | null> {
   try {
     const kind = token[0];
+    if (token.length > MAX_SHARE_BYTES) return null;
     const bytes = fromBase64Url(token.slice(1));
     let json: Uint8Array;
     if (kind === PREFIX_DEFLATE) {
       if (typeof DecompressionStream === "undefined") return null;
-      json = await pipe(bytes, new DecompressionStream("deflate-raw"));
+      json = await pipe(bytes, new DecompressionStream("deflate-raw"), MAX_SHARE_BYTES);
     } else if (kind === PREFIX_PLAIN) json = bytes;
     else return null;
     const parsed = JSON.parse(new TextDecoder().decode(json));

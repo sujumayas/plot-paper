@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { isHexColor } from "@/lib/viz/scale";
 import { FONT_PAIRINGS, MAX_SIZE, MIN_SIZE, PALETTES, SIZE_PRESETS, THEMES, findPalette, findTheme } from "@/lib/viz/themes";
@@ -28,7 +29,6 @@ export function StylePanel({ doc, update }: Props) {
     update((d) => ({ ...d, style: { ...d.style, number: { ...d.style.number, ...patch } } }), coalesce);
   const theme = findTheme(s.theme);
   const palette = findPalette(s.palette) ?? findPalette(theme.palette) ?? PALETTES[0];
-  const clampSize = (v: number) => Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.round(v || 0)));
 
   return (
     <>
@@ -119,11 +119,11 @@ export function StylePanel({ doc, update }: Props) {
         <div className="field-row">
           <div className="field">
             <label htmlFor="w">{t("style.width")}</label>
-            <input id="w" className="input sm" type="number" min={MIN_SIZE} max={MAX_SIZE} value={s.width} onChange={(e) => set({ size: "custom", width: clampSize(Number(e.target.value)) }, "w")} />
+            <SizeInput id="w" value={s.width} onCommit={(width) => set({ size: "custom", width }, "w")} />
           </div>
           <div className="field">
             <label htmlFor="h">{t("style.height")}</label>
-            <input id="h" className="input sm" type="number" min={MIN_SIZE} max={MAX_SIZE} value={s.height} onChange={(e) => set({ size: "custom", height: clampSize(Number(e.target.value)) }, "h")} />
+            <SizeInput id="h" value={s.height} onCommit={(height) => set({ size: "custom", height }, "h")} />
           </div>
         </div>
       </section>
@@ -233,5 +233,41 @@ export function StylePanel({ doc, update }: Props) {
         </label>
       </section>
     </>
+  );
+}
+
+const clampSize = (v: number) => Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.round(v)));
+
+/**
+ * Pixel size field. Typing is free-form (so "1200" can be typed through "1", "12"…);
+ * in-range values apply live, and the value is clamped on blur or Enter.
+ */
+function SizeInput({ id, value, onCommit }: { id: string; value: number; onCommit: (v: number) => void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const finish = () => {
+    const n = Number(draft);
+    if (draft !== null && draft.trim() !== "" && Number.isFinite(n) && clampSize(n) !== value) onCommit(clampSize(n));
+    setDraft(null);
+  };
+  return (
+    <input
+      id={id}
+      className="input sm"
+      type="number"
+      inputMode="numeric"
+      min={MIN_SIZE}
+      max={MAX_SIZE}
+      value={draft ?? value}
+      onChange={(e) => {
+        setDraft(e.target.value);
+        const n = Number(e.target.value);
+        if (e.target.value.trim() !== "" && Number.isInteger(n) && n >= MIN_SIZE && n <= MAX_SIZE) onCommit(n);
+      }}
+      onBlur={finish}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") finish();
+        else if (e.key === "Escape") setDraft(null);
+      }}
+    />
   );
 }

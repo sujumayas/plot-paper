@@ -37,11 +37,27 @@ export function statusFor(deps: Pick<Deps, "config" | "provider">): AIStatus {
   };
 }
 
+/** Reads the body as a stream, stopping as soon as it passes MAX_BODY (content-length can lie or be absent). */
 async function readBody(req: Request): Promise<Record<string, unknown>> {
-  const len = Number(req.headers.get("content-length") ?? 0);
-  if (len > MAX_BODY) throw new AIError("too_large", "Request is too large.", 413);
-  const text = await req.text();
-  if (text.length > MAX_BODY) throw new AIError("too_large", "Request is too large.", 413);
+  const tooLarge = () => new AIError("too_large", "Request is too large.", 413);
+  if (Number(req.headers.get("content-length") ?? 0) > MAX_BODY) throw tooLarge();
+  let text = "";
+  if (req.body) {
+    const reader = req.body.getReader();
+    const decoder = new TextDecoder();
+    let size = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_BODY) {
+        await reader.cancel().catch(() => undefined);
+        throw tooLarge();
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    text += decoder.decode();
+  }
   try {
     const body = JSON.parse(text);
     if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error();
@@ -51,8 +67,14 @@ async function readBody(req: Request): Promise<Record<string, unknown>> {
   }
 }
 
-/** Shared gate: enabled, authenticated, rate-limited. */
-async function gate(deps: Deps): Promise<AIProvider> {
+function rateLimited(wait: number): AIError {
+  const e = new AIError("rate_limited", `AI limit reached. Try again in ${Math.ceil(wait / 60)} min.`, 429);
+  (e as AIError & { retryAfter?: number }).retryAfter = wait;
+  return e;
+}
+
+/** Shared gate: enabled, authenticated, rate-limited. Every upstream call costs one token of `key`. */
+async function gate(deps: Deps): Promise<{ provider: AIProvider; key: string }> {
   if (!deps.provider) throw new AIError("disabled", "AI is not configured on this server.", 503);
   let key = `ip:${deps.clientKey}`;
   if (deps.config.requireAuth) {
@@ -61,12 +83,8 @@ async function gate(deps: Deps): Promise<AIProvider> {
     key = `user:${uid}`;
   }
   const wait = deps.limiter.take(key);
-  if (wait > 0) {
-    const e = new AIError("rate_limited", `AI limit reached. Try again in ${Math.ceil(wait / 60)} min.`, 429);
-    (e as AIError & { retryAfter?: number }).retryAfter = wait;
-    throw e;
-  }
-  return deps.provider;
+  if (wait > 0) throw rateLimited(wait);
+  return { provider: deps.provider, key };
 }
 
 function sanitizePrompt(v: unknown): string {
@@ -119,7 +137,7 @@ export function normalizeSuggestion(raw: unknown, columns: ColumnInfo[]): ChartS
 
 export async function handleSuggest(req: Request, deps: Deps): Promise<Response> {
   try {
-    const provider = await gate(deps);
+    const { provider } = await gate(deps);
     const body = await readBody(req);
     const prompt = sanitizePrompt(body.prompt);
     const columns: ColumnInfo[] = Array.isArray(body.columns)
@@ -148,7 +166,7 @@ export async function handleSuggest(req: Request, deps: Deps): Promise<Response>
 
 export async function handleSpec(req: Request, deps: Deps): Promise<Response> {
   try {
-    const provider = await gate(deps);
+    const { provider, key } = await gate(deps);
     const body = await readBody(req);
     const prompt = sanitizePrompt(body.prompt);
     if (!prompt) throw new AIError("bad_request", "Describe the chart you want.", 400);
@@ -168,8 +186,8 @@ export async function handleSpec(req: Request, deps: Deps): Promise<Response> {
     let raw = await provider.json({ system: SPEC_SYSTEM, text, image, schema: SPEC_SCHEMA as unknown as Record<string, unknown>, task: "spec", meta });
     let { spec, notes } = aiOutputToSpec((raw ?? {}) as Record<string, unknown>);
     let v = validateSpec(spec);
-    if (!v.spec) {
-      // One repair round: send the errors back.
+    if (!v.spec && deps.limiter.take(key) === 0) {
+      // One repair round (a second upstream call, so it costs a second token): send the errors back.
       const repair = `This PlotSpec failed validation. Fix every error and return the corrected spec.\nErrors:\n- ${v.errors.slice(0, 20).join("\n- ")}\nSpec:\n${JSON.stringify(spec).slice(0, 20_000)}\nOriginal request: ${prompt}`;
       raw = await provider.json({ system: SPEC_SYSTEM, text: repair, schema: SPEC_SCHEMA as unknown as Record<string, unknown>, task: "spec", meta: { ...meta, current: null } });
       ({ spec, notes } = aiOutputToSpec((raw ?? {}) as Record<string, unknown>));

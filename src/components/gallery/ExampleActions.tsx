@@ -6,9 +6,10 @@ import { IconArrowRight, IconDownload, IconVector } from "@/components/icons";
 import { useToast } from "@/components/ui/Toasts";
 import { useI18n } from "@/lib/i18n";
 import { resolveDefinition } from "@/lib/resolveDef";
-import { KEYS, writeJSON } from "@/lib/storage";
-const exporter = () => import("@/lib/viz/export/browser");
+import { stashIncoming } from "@/lib/incoming";
 import type { ChartDoc } from "@/lib/viz/types";
+
+const exporter = () => import("@/lib/viz/export/browser");
 
 export function ExampleActions({ doc, exampleId, spec }: { doc: ChartDoc; exampleId: string | null; spec: unknown }) {
   const { t, locale } = useI18n();
@@ -25,8 +26,9 @@ export function ExampleActions({ doc, exampleId, spec }: { doc: ChartDoc; exampl
         onClick={() => {
           if (exampleId) router.push(`/build?example=${encodeURIComponent(exampleId)}` as never);
           else {
-            writeJSON(KEYS.doc, doc);
-            router.push("/build" as never);
+            // Hand the chart over without overwriting the visitor's autosaved draft.
+            stashIncoming(doc, spec);
+            router.push("/build?incoming=1" as never);
           }
         }}
       >

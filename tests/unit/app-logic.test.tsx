@@ -165,3 +165,15 @@ describe("safeNext", () => {
     for (const bad of [null, "", "https://evil.com", "//evil.com", "/\\evil.com", "javascript:alert(1)"]) expect(safeNext(bad)).toBe("/build");
   });
 });
+
+describe("guides", () => {
+  it("renders docs with working cross-links and heading anchors", async () => {
+    const { renderGuide, headingId } = await import("@/lib/docs");
+    expect(headingId("Before you open AI to the public")).toBe("before-you-open-ai-to-the-public");
+    expect(headingId("Self-hosting &amp; <code>config</code>")).toBe("self-hosting--config");
+    const ai = await renderGuide("ai");
+    expect(ai.html).toContain('href="/guide/self-hosting#before-you-open-ai-to-the-public"');
+    const hosting = await renderGuide("self-hosting");
+    expect(hosting.html).toContain('id="before-you-open-ai-to-the-public"');
+  });
+});

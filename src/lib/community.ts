@@ -1,19 +1,23 @@
 import { resolveDefinition } from "./resolveDef";
 import { getServerClient } from "./supabase/server";
 import { sanitizeDoc } from "./viz/engine";
+import type { PlotSpec } from "./viz/spec/types";
+import { validateSpec } from "./viz/spec/validate";
 import type { ChartDefinition, ChartDoc, DataRow } from "./viz/types";
 
 export type CommunityChart = {
   id: string;
   doc: ChartDoc;
   def: ChartDefinition;
+  /** The PlotSpec of a custom chart type (validated), or null for built-ins. */
+  spec: PlotSpec | null;
   author: string;
   likes: number;
   views: number;
   createdAt: string;
 };
 
-type Row = {
+export type Row = {
   id: string;
   title: string;
   description: string | null;
@@ -26,11 +30,30 @@ type Row = {
   created_at: string;
 };
 
-function toChart(r: Row): CommunityChart {
-  const cfg = (r.config ?? {}) as Partial<ChartDoc> & { spec?: unknown };
-  const chartType = r.chart_type ?? String(cfg.chartType ?? "bar");
-  const doc = sanitizeDoc({ ...(cfg as ChartDoc), chartType, title: cfg.title ?? r.title, subtitle: cfg.subtitle ?? r.description ?? "", data: Array.isArray(r.data) ? r.data : [] });
-  return { id: r.id, doc, def: resolveDefinition(chartType, cfg.spec), author: r.display_author ?? "community", likes: r.likes, views: r.views, createdAt: r.created_at };
+/** Same cap as publishing (and the database constraint). */
+export const MAX_COMMUNITY_ROWS = 5000;
+
+/** Turns a database row into a chart; null when the row is unusable (never throws). */
+export function toChart(r: Row): CommunityChart | null {
+  try {
+    const cfg = (r.config && typeof r.config === "object" ? r.config : {}) as Partial<ChartDoc> & { spec?: unknown };
+    const chartType = r.chart_type ?? String(cfg.chartType ?? "bar");
+    const data = Array.isArray(r.data) ? r.data.slice(0, MAX_COMMUNITY_ROWS) : [];
+    const doc = sanitizeDoc({ ...(cfg as ChartDoc), chartType, title: cfg.title ?? r.title, subtitle: cfg.subtitle ?? r.description ?? "", data });
+    const spec = cfg.spec ? (validateSpec(cfg.spec).spec ?? null) : null;
+    return {
+      id: String(r.id),
+      doc,
+      def: resolveDefinition(chartType, spec),
+      spec,
+      author: typeof r.display_author === "string" && r.display_author ? r.display_author : "community",
+      likes: Number(r.likes) || 0,
+      views: Number(r.views) || 0,
+      createdAt: String(r.created_at ?? ""),
+    };
+  } catch {
+    return null;
+  }
 }
 
 /** Latest published community charts; [] when Supabase isn't configured or fails. */
@@ -45,7 +68,7 @@ export async function listCommunityCharts(limit = 60): Promise<CommunityChart[]>
       .order("created_at", { ascending: false })
       .limit(limit);
     if (error || !data) return [];
-    return (data as Row[]).map(toChart);
+    return (data as Row[]).map(toChart).filter((c): c is CommunityChart => c !== null);
   } catch {
     return [];
   }
