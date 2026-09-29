@@ -218,3 +218,40 @@ test.describe("large datasets", () => {
     for (const sym of ["MSFT", "AMZN", "AAPL"]) await expect(svg).toContainText(sym);
   });
 });
+
+test.describe("other exports", () => {
+  test("PDF opens a print-ready page with the chart", async ({ page }) => {
+    await openBuilder(page);
+    await page.getByTestId("export-menu").click();
+    const popup = page.waitForEvent("popup");
+    await page.locator(".menu-item", { hasText: "PDF (print)" }).click();
+    const win = await popup;
+    await expect(win.locator("svg").first()).toBeVisible();
+    await expect(win).toHaveTitle("Coffee is still the office favourite");
+  });
+
+  test("copies the chart image to the clipboard", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await openBuilder(page);
+    await page.getByTestId("export-menu").click();
+    await page.locator(".menu-item", { hasText: "Copy image" }).click();
+    await toast(page, /Image copied/);
+    const types = await page.evaluate(async () => (await navigator.clipboard.read()).flatMap((i) => i.types));
+    expect(types).toContain("image/png");
+  });
+
+  test("Plotpaper files round-trip", async ({ page }) => {
+    await openBuilder(page, "?type=waterfall");
+    await page.getByTestId("export-menu").click();
+    const download = page.waitForEvent("download");
+    await page.locator(".menu-item", { hasText: "Plotpaper file (.json)" }).click();
+    const path = (await (await download).path())!;
+    await page.goto("/build?type=bar");
+    await page.getByTestId("export-menu").click();
+    const chooser = page.waitForEvent("filechooser");
+    await page.locator(".menu-item", { hasText: "Open Plotpaper file" }).click();
+    await (await chooser).setFiles(path);
+    await expect(page.locator('[data-chart="waterfall"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(await posterSvg(page)).toContainText("From revenue to net profit");
+  });
+});
