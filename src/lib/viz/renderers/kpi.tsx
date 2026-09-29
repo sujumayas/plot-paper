@@ -2,7 +2,7 @@ import { fmt, toNum } from "../helpers";
 import type { RenderFn } from "../types";
 
 export const renderKPI: RenderFn = (data, cols, opts) => {
-  const { width: W, height: H, accent } = opts;
+  const { width: W, height: H } = opts;
   const labelCol = cols[0],
     valCol = cols[1],
     deltaCol = cols[2];
@@ -24,9 +24,9 @@ export const renderKPI: RenderFn = (data, cols, opts) => {
               x={cx}
               y={cy - 18}
               textAnchor="middle"
-              fontFamily="var(--mono)"
+              fontFamily="var(--num)"
               fontSize="11"
-              fill="var(--ink-3)"
+              fill="var(--fg-4)"
               letterSpacing="1.6"
             >
               {String(r[labelCol]).toUpperCase().slice(0, 22)}
@@ -35,10 +35,11 @@ export const renderKPI: RenderFn = (data, cols, opts) => {
               x={cx}
               y={cy + 26}
               textAnchor="middle"
-              fontFamily="var(--serif)"
+              fontFamily="var(--display)"
+              fontWeight="700"
               fontSize="54"
-              fill="var(--ink)"
-              letterSpacing="-1"
+              fill="var(--fg-1)"
+              letterSpacing="-1.2"
             >
               {fmt(toNum(r[valCol]))}
             </text>
@@ -47,9 +48,10 @@ export const renderKPI: RenderFn = (data, cols, opts) => {
                 x={cx}
                 y={cy + 52}
                 textAnchor="middle"
-                fontFamily="var(--mono)"
+                fontFamily="var(--num)"
                 fontSize="11"
-                fill={delta >= 0 ? accent : "var(--danger)"}
+                fontWeight="600"
+                fill={delta >= 0 ? "var(--ibk-green)" : "var(--red)"}
               >
                 {delta >= 0 ? "▲" : "▼"} {Math.abs(delta)}%
               </text>

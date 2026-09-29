@@ -1,23 +1,15 @@
-import { Instrument_Serif, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Montserrat, Inter } from "next/font/google";
 
-export const instrumentSerif = Instrument_Serif({
+export const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
   display: "swap",
 });
 
-export const interTight = Inter_Tight({
+export const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-export const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
+  weight: ["400", "500", "600", "800"],
+  variable: "--font-num",
   display: "swap",
 });

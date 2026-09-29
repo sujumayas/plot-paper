@@ -47,7 +47,7 @@ export function BuilderView({
     allTypes.find((v) => v.id === initialVizId) ?? SEED_CATALOG[0];
 
   const [viz, setViz] = useState<VizCatalogEntry>(initial);
-  const [title, setTitle] = useState<string>(initialTitle ?? "Untitled graph");
+  const [title, setTitle] = useState<string>(initialTitle ?? "Gráfico sin título");
   const [data, setData] = useState<VizRow[]>(
     initialData?.length ? initialData : viz.sample,
   );
@@ -121,11 +121,11 @@ export function BuilderView({
 
   const handlePublish = async () => {
     if (!userId) {
-      setSignInReason("Sign in to publish.");
+      setSignInReason("Inicia sesión para publicar.");
       return;
     }
     if (data.length === 0) {
-      toast("Load some data first");
+      toast("Primero carga datos");
       return;
     }
     const supa = getBrowserClient();
@@ -143,7 +143,7 @@ export function BuilderView({
       vizTypeId = (vt as { id: string } | null)?.id ?? null;
     }
     if (!vizTypeId) {
-      toast("Could not resolve viz type");
+      toast("No pudimos resolver el tipo");
       return;
     }
     const { data: inserted, error } = await supa
@@ -158,17 +158,17 @@ export function BuilderView({
       .select("id")
       .single();
     if (error || !inserted) {
-      toast("Could not publish — " + (error?.message ?? "unknown error"));
+      toast("No pudimos publicar — " + (error?.message ?? "error desconocido"));
       return;
     }
-    toast("Published!");
+    toast("¡Publicado!");
     clearDraft();
     router.push("/explore");
   };
 
   const handleOpenAI = () => {
     if (!userId) {
-      setSignInReason("Sign in to generate with AI.");
+      setSignInReason("Inicia sesión para generar con IA.");
       return;
     }
     setAiOpen(true);
@@ -208,7 +208,7 @@ export function BuilderView({
         svgRef={svgRef}
         onData={(rows) => {
           setData(rows);
-          toast(`Loaded ${rows.length} rows`);
+          toast(`Cargadas ${rows.length} filas`);
         }}
         onImportJSON={({ title: t, vizId, data: rows }) => {
           if (vizId) {
@@ -259,7 +259,7 @@ function useSearchParamsMessage(
   useEffect(() => {
     if (already.current) return;
     if (search.get("new")) {
-      toast("Published to Explore");
+      toast("Publicado a la galería");
       already.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

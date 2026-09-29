@@ -29,9 +29,9 @@ export const renderHBar: RenderFn = (data, cols, opts) => {
               x={padL - 10}
               y={y + barH / 2 + 4}
               textAnchor="end"
-              fontFamily="var(--sans)"
+              fontFamily="var(--body)"
               fontSize="12"
-              fill="var(--ink)"
+              fill="var(--fg-1)"
             >
               {String(r[labelCol]).slice(0, 24)}
             </text>
@@ -39,9 +39,9 @@ export const renderHBar: RenderFn = (data, cols, opts) => {
             <text
               x={padL + w + 6}
               y={y + barH / 2 + 4}
-              fontFamily="var(--mono)"
+              fontFamily="var(--num)"
               fontSize="11"
-              fill="var(--ink-2)"
+              fill="var(--fg-2)"
             >
               {fmt(v)}
             </text>

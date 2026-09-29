@@ -39,7 +39,7 @@ export default async function BuildPage({
           data: VizRow[];
           viz_types: Parameters<typeof resolveVizFromRow>[0];
         };
-        initialTitle = useDataId ? `${graph.title} (new lens)` : graph.title;
+        initialTitle = useDataId ? `${graph.title} (nueva vista)` : graph.title;
         initialData = graph.data;
         if (!useDataId) {
           const viz = resolveVizFromRow(graph.viz_types);
@@ -68,18 +68,18 @@ export default async function BuildPage({
     <section>
       <div className="page-head">
         <div>
-          <div className="eyebrow">compose · the workbench</div>
+          <div className="eyebrow">Tu mesa de trabajo</div>
           <h1>
-            Pick a type. <em>Drop data.</em>
+            Elige un tipo. <em>Carga tus datos.</em>
           </h1>
           <p>
-            Download a CSV template for any chart, fill it in, drop it back.
-            Tweak the accent and publish to Explore.
+            Descarga la plantilla CSV de cualquier gráfico, complétala y
+            súbela. Ajusta el acento y publica a la galería.
           </p>
         </div>
       </div>
 
-      <Suspense fallback={<div style={{ padding: 48 }}>Loading…</div>}>
+      <Suspense fallback={<div style={{ padding: 48 }}>Cargando…</div>}>
         <BuilderView
           initialVizId={initialVizId}
           initialTitle={initialTitle}

@@ -9,7 +9,7 @@ export type Tweaks = {
 };
 
 const DEFAULT: Tweaks = {
-  accent: "oklch(64% 0.16 48)",
+  accent: "#05BE50",
   grid: true,
   labels: true,
 };
@@ -17,11 +17,12 @@ const DEFAULT: Tweaks = {
 const KEY = "pp-tweaks";
 
 export const ACCENT_SWATCHES: { name: string; value: string }[] = [
-  { name: "Warm", value: "oklch(64% 0.16 48)" },
-  { name: "Cool", value: "oklch(64% 0.16 240)" },
-  { name: "Fern", value: "oklch(64% 0.16 150)" },
-  { name: "Plum", value: "oklch(64% 0.16 340)" },
-  { name: "Ochre", value: "oklch(64% 0.16 80)" },
+  { name: "Verde IBK", value: "#05BE50" },
+  { name: "Azul IBK", value: "#0039A6" },
+  { name: "Azul cielo", value: "#64B4E6" },
+  { name: "Ámbar", value: "#FFB406" },
+  { name: "Rojo", value: "#EB0046" },
+  { name: "Mint", value: "#CDF2DC" },
 ];
 
 export function useTweaks(): [Tweaks, (next: Partial<Tweaks>) => void] {
@@ -33,7 +34,12 @@ export function useTweaks(): [Tweaks, (next: Partial<Tweaks>) => void] {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        setTweaks({ ...DEFAULT, ...parsed });
+        // Migrate old oklch swatches to IBK default.
+        const accent =
+          typeof parsed.accent === "string" && !parsed.accent.startsWith("oklch")
+            ? parsed.accent
+            : DEFAULT.accent;
+        setTweaks({ ...DEFAULT, ...parsed, accent });
       }
     } catch {
       /* ignore */

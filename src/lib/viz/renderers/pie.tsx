@@ -50,7 +50,7 @@ export const renderPieOrDonut = (donut: boolean): RenderFn => {
       <g>
         {slices.map((s, i) => (
           <g key={i}>
-            <path d={s.d} fill={s.color} stroke="var(--paper)" strokeWidth="2">
+            <path d={s.d} fill={s.color} stroke="var(--bg-card)" strokeWidth="2">
               <title>
                 {String(s.label)}: {fmt(s.value)} ({(s.pct * 100).toFixed(1)}%)
               </title>
@@ -60,9 +60,9 @@ export const renderPieOrDonut = (donut: boolean): RenderFn => {
                 x={s.lx}
                 y={s.ly}
                 textAnchor={s.anchor}
-                fontFamily="var(--mono)"
+                fontFamily="var(--num)"
                 fontSize="10"
-                fill="var(--ink-2)"
+                fill="var(--fg-2)"
                 dominantBaseline="middle"
               >
                 {String(s.label).slice(0, 14)} · {(s.pct * 100).toFixed(0)}%
@@ -76,9 +76,9 @@ export const renderPieOrDonut = (donut: boolean): RenderFn => {
               x={cx}
               y={cy - 2}
               textAnchor="middle"
-              fontFamily="var(--serif)"
+              fontFamily="var(--display)"
               fontSize="28"
-              fill="var(--ink)"
+              fill="var(--fg-1)"
             >
               {fmt(total)}
             </text>
@@ -86,9 +86,9 @@ export const renderPieOrDonut = (donut: boolean): RenderFn => {
               x={cx}
               y={cy + 16}
               textAnchor="middle"
-              fontFamily="var(--mono)"
+              fontFamily="var(--num)"
               fontSize="10"
-              fill="var(--ink-3)"
+              fill="var(--fg-4)"
               letterSpacing="1.5"
             >
               TOTAL

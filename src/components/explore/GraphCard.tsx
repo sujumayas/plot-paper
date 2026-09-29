@@ -14,13 +14,13 @@ type Props = {
 
 export function GraphCard({ graph, accent, grid, onOpen }: Props) {
   const viz = resolveVizFromRow(graph.viz_types);
-  const author = graph.display_author ?? "anon";
+  const author = graph.display_author ?? "anónimo";
   return (
     <button
       className="card"
       type="button"
       onClick={() => onOpen(graph)}
-      aria-label={`Open ${graph.title}`}
+      aria-label={`Abrir ${graph.title}`}
     >
       <div className="card-head">
         <h3 className="card-title">{graph.title}</h3>

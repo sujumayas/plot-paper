@@ -30,7 +30,7 @@ export const renderBar: RenderFn = (data, cols, opts) => {
               x2={padL + iw}
               y1={y}
               y2={y}
-              stroke="var(--rule-soft)"
+              stroke="var(--line)"
               strokeWidth="1"
             />
           );
@@ -44,9 +44,9 @@ export const renderBar: RenderFn = (data, cols, opts) => {
             x={padL - 10}
             y={y + 4}
             textAnchor="end"
-            fontFamily="var(--mono)"
+            fontFamily="var(--num)"
             fontSize="10"
-            fill="var(--ink-3)"
+            fill="var(--fg-4)"
           >
             {fmt(v)}
           </text>
@@ -57,7 +57,7 @@ export const renderBar: RenderFn = (data, cols, opts) => {
         x2={padL + iw}
         y1={padT + ih}
         y2={padT + ih}
-        stroke="var(--ink)"
+        stroke="var(--fg-1)"
         strokeWidth="1"
       />
       {data.map((row, i) => {
@@ -77,9 +77,9 @@ export const renderBar: RenderFn = (data, cols, opts) => {
                 x={x + barW / 2}
                 y={y - 6}
                 textAnchor="middle"
-                fontFamily="var(--mono)"
+                fontFamily="var(--num)"
                 fontSize="10"
-                fill="var(--ink-2)"
+                fill="var(--fg-2)"
               >
                 {fmt(v)}
               </text>
@@ -88,9 +88,9 @@ export const renderBar: RenderFn = (data, cols, opts) => {
               x={x + barW / 2}
               y={padT + ih + 16}
               textAnchor="middle"
-              fontFamily="var(--sans)"
+              fontFamily="var(--body)"
               fontSize="11"
-              fill="var(--ink-2)"
+              fill="var(--fg-2)"
             >
               {String(row[labelCol]).slice(0, 10)}
             </text>

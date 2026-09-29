@@ -20,7 +20,7 @@ export default async function ExplorePage() {
     if (dbErr) throw dbErr;
     graphs = (data ?? []) as GraphWithVizType[];
   } catch (err) {
-    error = err instanceof Error ? err.message : "Unknown error";
+    error = err instanceof Error ? err.message : "Error desconocido";
   }
 
   if (error) {
@@ -28,35 +28,35 @@ export default async function ExplorePage() {
       <section>
         <div className="page-head">
           <div>
-            <div className="eyebrow">setup required</div>
+            <div className="eyebrow">Configuración requerida</div>
             <h1>
-              Connect <em>Supabase</em> to see Explore.
+              Conecta <em>Supabase</em> para ver la galería.
             </h1>
             <p>
-              The Explore feed reads from Postgres. Set{" "}
-              <code>NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-              <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in{" "}
-              <code>.env.local</code>, run the migrations in{" "}
-              <code>supabase/migrations/</code>, then run{" "}
-              <code>npm run seed</code> to provision Esen&rsquo;s seed user and
-              9 gallery graphs.
+              La galería lee de Postgres. Configura{" "}
+              <code>NEXT_PUBLIC_SUPABASE_URL</code> y{" "}
+              <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> en{" "}
+              <code>.env.local</code>, corre las migraciones de{" "}
+              <code>supabase/migrations/</code> y luego{" "}
+              <code>npm run seed</code> para provisionar el usuario semilla y
+              9 gráficos de muestra.
             </p>
             <div style={{ marginTop: 24 }}>
               <Link href="/build" prefetch={false}>
                 <button className="btn primary" type="button">
-                  Or jump straight to Build →
+                  O salta directo a Construir →
                 </button>
               </Link>
             </div>
             <details
               style={{
                 marginTop: 24,
-                fontFamily: "var(--mono)",
+                fontFamily: "var(--num)",
                 fontSize: 11,
-                color: "var(--ink-3)",
+                color: "var(--fg-4)",
               }}
             >
-              <summary>Error detail</summary>
+              <summary>Detalle del error</summary>
               <pre style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>{error}</pre>
             </details>
           </div>

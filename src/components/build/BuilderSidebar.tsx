@@ -16,6 +16,19 @@ type Props = {
   aiGated: boolean;
 };
 
+const CATEGORY_LABEL: Record<string, string> = {
+  comparison: "Comparación",
+  composition: "Composición",
+  trend: "Tendencia",
+  distribution: "Distribución",
+  relationship: "Relación",
+  geo: "Geográficos",
+  flow: "Flujo",
+  hierarchy: "Jerarquía",
+};
+
+const labelFor = (cat: string) => CATEGORY_LABEL[cat] ?? cat;
+
 export function BuilderSidebar({
   seedTypes,
   ownedTypes,
@@ -30,13 +43,13 @@ export function BuilderSidebar({
     <aside className="builder-side">
       <div className="side-section">
         <div className="side-title">
-          <span>Visualization type</span>
+          <span>Tipo de visualización</span>
           <span className="num">1</span>
         </div>
 
         {ownedTypes.length > 0 && (
           <>
-            <div className="side-category">Your types</div>
+            <div className="side-category">Tus tipos</div>
             <div className="viz-list">
               {ownedTypes.map((viz) => (
                 <VizButton
@@ -53,11 +66,12 @@ export function BuilderSidebar({
         {VIZ_CATEGORIES.map((cat) => {
           const items = seedTypes.filter((v) => v.category === cat);
           if (!items.length) return null;
+          const heading = ownedTypes.length > 0
+            ? `Base · ${labelFor(cat)}`
+            : labelFor(cat);
           return (
             <div key={cat}>
-              <div className="side-category">
-                {ownedTypes.length > 0 ? `Seed · ${cat}` : cat}
-              </div>
+              <div className="side-category">{heading}</div>
               <div className="viz-list">
                 {items.map((viz) => (
                   <VizButton
@@ -78,15 +92,15 @@ export function BuilderSidebar({
           style={{ marginTop: 16 }}
           onClick={onOpenAI}
           disabled={aiGated}
-          title={aiGated ? "Sign in to generate with AI" : undefined}
+          title={aiGated ? "Inicia sesión para generar con IA" : undefined}
         >
-          <IconSparkle /> Generate with AI
+          <IconSparkle /> Generar con IA
         </button>
       </div>
 
       <div className="side-section">
         <div className="side-title">
-          <span>Data &amp; export</span>
+          <span>Datos y exportar</span>
           <span className="num">2</span>
         </div>
         <button
@@ -94,17 +108,16 @@ export function BuilderSidebar({
           className="btn block primary"
           onClick={onOpenData}
         >
-          Data &amp; export…
+          Datos y exportar…
         </button>
         <div
-          className="mono small"
+          className="small"
           style={{
             marginTop: 10,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
+            fontFamily: "var(--num)",
           }}
         >
-          Rows loaded · {rows}
+          Filas cargadas · {rows}
         </div>
       </div>
     </aside>
@@ -134,7 +147,7 @@ function VizButton({
       <span>
         <span className="name">{viz.name}</span>
         <span className="desc">
-          {viz.desc || (viz.category as VizCategory)}
+          {viz.desc || labelFor(viz.category as VizCategory)}
         </span>
       </span>
       <span className="radio">{selected ? "●" : "○"}</span>

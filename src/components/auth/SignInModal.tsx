@@ -26,13 +26,13 @@ export function SignInModal({ open, onClose, reason }: Props) {
       >
         <div className="modal-head">
           <div>
-            <span className="pill">Sign in</span>
+            <span className="pill accent">Iniciar sesión</span>
             <h2 style={{ marginTop: 10 }}>
-              {reason ?? "Sign in to continue"}
+              {reason ?? "Inicia sesión para continuar"}
             </h2>
-            <p>Email OTP. No passwords.</p>
+            <p>Código por correo. Sin contraseñas.</p>
           </div>
-          <button className="close-x" onClick={onClose} aria-label="Close">
+          <button className="close-x" onClick={onClose} aria-label="Cerrar">
             <IconClose />
           </button>
         </div>

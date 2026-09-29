@@ -35,7 +35,7 @@ export const renderScatter: RenderFn = (data, cols, opts) => {
               x2={padL + iw}
               y1={y}
               y2={y}
-              stroke="var(--rule-soft)"
+              stroke="var(--line)"
             />
           );
         })}
@@ -48,9 +48,9 @@ export const renderScatter: RenderFn = (data, cols, opts) => {
             x={padL - 10}
             y={y + 4}
             textAnchor="end"
-            fontFamily="var(--mono)"
+            fontFamily="var(--num)"
             fontSize="10"
-            fill="var(--ink-3)"
+            fill="var(--fg-4)"
           >
             {fmt(v)}
           </text>
@@ -65,9 +65,9 @@ export const renderScatter: RenderFn = (data, cols, opts) => {
             x={x}
             y={padT + ih + 18}
             textAnchor="middle"
-            fontFamily="var(--mono)"
+            fontFamily="var(--num)"
             fontSize="10"
-            fill="var(--ink-3)"
+            fill="var(--fg-4)"
           >
             {fmt(v)}
           </text>
@@ -78,9 +78,9 @@ export const renderScatter: RenderFn = (data, cols, opts) => {
         x2={padL + iw}
         y1={padT + ih}
         y2={padT + ih}
-        stroke="var(--ink)"
+        stroke="var(--fg-1)"
       />
-      <line x1={padL} x2={padL} y1={padT} y2={padT + ih} stroke="var(--ink)" />
+      <line x1={padL} x2={padL} y1={padT} y2={padT + ih} stroke="var(--fg-1)" />
       {data.map((r, i) => {
         const size = sizeCol ? 4 + (sizes[i] / sMax) * 18 : 6;
         return (
@@ -105,9 +105,9 @@ export const renderScatter: RenderFn = (data, cols, opts) => {
         x={padL + iw / 2}
         y={padT + ih + 36}
         textAnchor="middle"
-        fontFamily="var(--mono)"
+        fontFamily="var(--num)"
         fontSize="10"
-        fill="var(--ink-3)"
+        fill="var(--fg-4)"
         letterSpacing="1.4"
       >
         {xCol.toUpperCase()}
@@ -116,9 +116,9 @@ export const renderScatter: RenderFn = (data, cols, opts) => {
         x={padL - 36}
         y={padT + ih / 2}
         textAnchor="middle"
-        fontFamily="var(--mono)"
+        fontFamily="var(--num)"
         fontSize="10"
-        fill="var(--ink-3)"
+        fill="var(--fg-4)"
         letterSpacing="1.4"
         transform={`rotate(-90, ${padL - 36}, ${padT + ih / 2})`}
       >

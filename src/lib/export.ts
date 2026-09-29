@@ -2,21 +2,33 @@ import { downloadBlob, downloadText } from "./download";
 
 /**
  * Replaces CSS variable references inside a serialized SVG string with hex/family values,
- * so the SVG is portable outside the browser DOM. Values mirror the tokens in globals.css.
+ * so the SVG is portable outside the browser DOM. Values mirror the IBK tokens in globals.css.
  */
 const CSS_VAR_MAP: Record<string, string> = {
-  "var(--paper)": "#f4efe6",
-  "var(--paper-2)": "#ece6d9",
-  "var(--ink)": "#1a1915",
-  "var(--ink-2)": "#3a372f",
-  "var(--ink-3)": "#6b665a",
-  "var(--ink-4)": "#9a9486",
-  "var(--rule)": "#cbc4b0",
-  "var(--rule-soft)": "#ddd5c2",
-  "var(--danger)": "#c24a34",
-  "var(--mono)": "ui-monospace, Menlo, monospace",
-  "var(--sans)": "Helvetica, Arial, sans-serif",
-  "var(--serif)": "Georgia, serif",
+  "var(--bg-page)": "#F4F5F7",
+  "var(--bg-card)": "#FFFFFF",
+  "var(--bg-card-muted)": "#FBFBFB",
+  "var(--fg-1)": "#0F191E",
+  "var(--fg-2)": "#333333",
+  "var(--fg-3)": "#4A4A4A",
+  "var(--fg-4)": "#878C8F",
+  "var(--fg-5)": "#9B9B9B",
+  "var(--fg-6)": "#B7BABC",
+  "var(--line-strong)": "#D9DADB",
+  "var(--line)": "#ECEDED",
+  "var(--line-soft)": "#F0F0F0",
+  "var(--ibk-green)": "#05BE50",
+  "var(--ibk-green-dark)": "#00A94F",
+  "var(--ibk-green-soft)": "#CDF2DC",
+  "var(--ibk-blue)": "#0039A6",
+  "var(--ibk-blue-deep)": "#2F4A9F",
+  "var(--ibk-blue-sky)": "#64B4E6",
+  "var(--red)": "#EB0046",
+  "var(--amber)": "#FFB406",
+  "var(--orange)": "#F99100",
+  "var(--display)": "Geometria, Helvetica, Arial, sans-serif",
+  "var(--body)": "Montserrat, Helvetica, Arial, sans-serif",
+  "var(--num)": "Inter, ui-monospace, Menlo, monospace",
 };
 
 function serializeWithInlinedVars(svgEl: SVGSVGElement): string {
@@ -48,7 +60,7 @@ export function exportPNG(svgEl: SVGSVGElement, filename: string, scale = 2) {
     canvas.height = h * scale;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.fillStyle = "#f4efe6";
+    ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     canvas.toBlob((b) => {
@@ -66,16 +78,18 @@ export function exportPDF(svgEl: SVGSVGElement, filename: string, title: string)
   w.document.write(`<!doctype html><html><head><title>${title || filename}</title>
     <style>
       @page { size: A4 landscape; margin: 20mm; }
-      body { margin: 0; padding: 32px; font-family: Helvetica, Arial, sans-serif; background: #f4efe6; color: #1a1915; }
-      h1 { font-family: Georgia, serif; font-weight: 400; font-size: 32px; margin: 0 0 6px; letter-spacing: -0.01em; }
-      .sub { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #6b665a; margin-bottom: 24px; }
+      body { margin: 0; padding: 32px; font-family: Helvetica, Arial, sans-serif; background: #FFFFFF; color: #0F191E; }
+      h1 { font-family: Helvetica, Arial, sans-serif; font-weight: 500; font-size: 26px; margin: 0 0 4px; letter-spacing: -0.4px; color: #0039A6; }
+      .sub { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #878C8F; margin-bottom: 22px; }
       svg { max-width: 100%; height: auto; }
-      .foot { margin-top: 20px; font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: #6b665a; letter-spacing: 0.08em; text-transform: uppercase; border-top: 1px solid #cbc4b0; padding-top: 10px; }
+      .foot { margin-top: 20px; font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: #878C8F; border-top: 1px solid #ECEDED; padding-top: 10px; }
+      .strip { height: 6px; background: #00A94F; margin-top: 18px; }
     </style></head><body>
     <h1>${title || filename}</h1>
-    <div class="sub">Plotpaper · ${new Date().toLocaleDateString()}</div>
+    <div class="sub">Plotpaper · ${new Date().toLocaleDateString("es-PE")}</div>
     ${serialized}
-    <div class="foot">Exported from Plotpaper</div>
+    <div class="foot">Exportado desde Plotpaper</div>
+    <div class="strip"></div>
     <script>setTimeout(() => { window.print(); }, 350);</script>
     </body></html>`);
   w.document.close();

@@ -15,6 +15,12 @@ type Props = {
   graphs: GraphWithVizType[];
 };
 
+const SORT_LABEL: Record<Sort, string> = {
+  trending: "Populares",
+  new: "Nuevos",
+  liked: "Más gustados",
+};
+
 export function ExploreView({ graphs }: Props) {
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState<Sort>("trending");
@@ -57,16 +63,14 @@ export function ExploreView({ graphs }: Props) {
     <>
       <div className="page-head">
         <div>
-          <div className="eyebrow">Vol. 01 · Spring 2026</div>
+          <div className="eyebrow">Galería pública</div>
           <h1>
-            A field guide to <em>reading</em>
-            <br />
-            the shape of things.
+            Una guía para <em>leer</em> la forma de los datos.
           </h1>
           <p>
-            Plotpaper is a visualization playground. Browse graphs other people
-            published, fork their data, or start from a CSV template of your
-            own.
+            Plotpaper es un patio de juegos para visualizar datos. Explora
+            gráficos publicados por otros, copia su data o empieza desde tu
+            propia plantilla CSV.
           </p>
         </div>
         <div
@@ -77,12 +81,12 @@ export function ExploreView({ graphs }: Props) {
             gap: 10,
           }}
         >
-          <div className="mono small">
-            {graphs.length} public graphs · {totalViews.toLocaleString()} views
+          <div className="small">
+            {graphs.length} gráficos públicos · {totalViews.toLocaleString("es-PE")} vistas
           </div>
           <Link href="/build" prefetch={false}>
             <button className="btn primary" type="button">
-              <IconPlus /> Build a new graph
+              <IconPlus /> Construye un gráfico
             </button>
           </Link>
         </div>
@@ -94,7 +98,7 @@ export function ExploreView({ graphs }: Props) {
           onClick={() => setFilter("all")}
           type="button"
         >
-          All types
+          Todos
         </button>
         {types.map((t) => (
           <button
@@ -112,15 +116,15 @@ export function ExploreView({ graphs }: Props) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="search..."
-            aria-label="Search graphs"
+            placeholder="Buscar..."
+            aria-label="Buscar gráficos"
           />
         </div>
       </div>
 
       <div className="sort-bar">
         <span>
-          {filtered.length} / {graphs.length} results
+          {filtered.length} de {graphs.length} resultados
         </span>
         <div style={{ display: "flex", gap: 14 }}>
           {(["trending", "new", "liked"] as Sort[]).map((s) => (
@@ -130,7 +134,7 @@ export function ExploreView({ graphs }: Props) {
               onClick={() => setSort(s)}
               type="button"
             >
-              {s}
+              {SORT_LABEL[s]}
             </button>
           ))}
         </div>
@@ -141,12 +145,12 @@ export function ExploreView({ graphs }: Props) {
           style={{
             padding: "80px 0",
             textAlign: "center",
-            color: "var(--ink-3)",
+            color: "var(--fg-3)",
           }}
         >
           <p className="small">
-            No graphs yet. Head to <Link href="/build">Build</Link> and publish
-            one.
+            Aún no hay gráficos. Ve a <Link href="/build">Construir</Link> y
+            publica el primero.
           </p>
         </div>
       ) : (
@@ -155,7 +159,7 @@ export function ExploreView({ graphs }: Props) {
             <GraphCard
               key={g.id}
               graph={g}
-              accent="oklch(64% 0.16 48)"
+              accent="#05BE50"
               grid
               onOpen={setActive}
             />
@@ -166,13 +170,13 @@ export function ExploreView({ graphs }: Props) {
       {active && (
         <DetailModal
           graph={active}
-          accent="oklch(64% 0.16 48)"
+          accent="#05BE50"
           grid
           labels
           onClose={() => setActive(null)}
           toast={toast}
           onRequireAuth={() =>
-            setSignInReason("Sign in to fork, like, or save.")
+            setSignInReason("Inicia sesión para copiar, dar like o guardar.")
           }
         />
       )}

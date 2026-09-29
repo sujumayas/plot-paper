@@ -35,15 +35,15 @@ export const renderTimeline: RenderFn = (data, cols, opts) => {
               x2={x}
               y1={padT}
               y2={padT + ih}
-              stroke="var(--rule-soft)"
+              stroke="var(--line)"
             />
             <text
               x={x}
               y={padT + ih + 16}
               textAnchor="middle"
-              fontFamily="var(--mono)"
+              fontFamily="var(--num)"
               fontSize="10"
-              fill="var(--ink-3)"
+              fill="var(--fg-4)"
             >
               {fmt(v)}
             </text>
@@ -61,9 +61,9 @@ export const renderTimeline: RenderFn = (data, cols, opts) => {
               x={padL - 10}
               y={y + barH / 2 + 4}
               textAnchor="end"
-              fontFamily="var(--sans)"
+              fontFamily="var(--body)"
               fontSize="12"
-              fill="var(--ink)"
+              fill="var(--fg-1)"
             >
               {String(r[taskCol]).slice(0, 22)}
             </text>

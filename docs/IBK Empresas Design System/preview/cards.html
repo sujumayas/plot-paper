@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Cards</title><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{background:#F4F5F7;padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.card{background:#fff;border-radius:5px;box-shadow:0 4px 10px rgba(0,0,0,.05);padding:20px;}
+.tile{background:#fff;border:1px solid #ECEDED;border-radius:12px;padding:18px;display:flex;gap:16px;align-items:center}
+.tile .t{font-family:Montserrat;font-size:16px;color:#0F191E;letter-spacing:-0.1px}
+.card .title{font-family:"Geometria";font-weight:500;font-size:20px;color:#0039A6;margin-bottom:10px;letter-spacing:-0.5px}
+.card .body{font-family:Montserrat;font-size:14px;color:#333}
+.empty{grid-column:1/3;background:#fff;border-radius:12px;padding:22px;display:flex;gap:18px;align-items:center;box-shadow:0 4px 10px rgba(0,0,0,.05)}
+.empty h3{font-family:"Geometria";font-weight:500;font-size:18px;color:#0039A6;margin:0;letter-spacing:-0.5px}
+.empty p{font-family:Montserrat;font-size:13px;color:#333;margin:4px 0 10px}
+
+/* Account card */
+.acct{grid-column:1/3;background:#fff;border-radius:16px;padding:26px 28px;display:flex;align-items:center;gap:20px;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+.acct .body{flex:1;}
+.acct .lbl{font-family:"Geometria";font-weight:700;font-size:24px;color:#0F191E;letter-spacing:-0.4px;margin:0 0 4px;}
+.acct .num{font-family:Inter;font-size:18px;color:#333;letter-spacing:0.01em;margin:0 0 18px;}
+.acct .amt{font-family:"Geometria";font-weight:800;font-size:30px;color:#0F191E;letter-spacing:-0.6px;margin:0;}
+.acct .tag{width:56px;height:56px;border-radius:50%;background:#CDF2DC;display:flex;align-items:center;justify-content:center;flex:0 0 56px;}
+.acct .tag .i{width:32px;height:28px;background:url(../assets/icons/billetera.svg) center/contain no-repeat;display:block;}
+</style></head><body>
+
+<div class="acct">
+  <div class="body">
+    <p class="lbl">Corriente Soles</p>
+    <p class="num">100-7000157402</p>
+    <p class="amt">$ 144,000.34</p>
+  </div>
+  <div class="tag"><span class="i"></span></div>
+</div>
+
+<div class="card"><div class="title">Nuevo pago masivo</div><div class="body">Paga planillas, CTS, a tus proveedores y realiza otros pagos masivos.</div></div>
+<div class="tile"><span style="display:inline-block;width:24px;height:24px;background:url(../assets/icons/edificios.svg) center/contain no-repeat;"></span><div class="t">Pago a proveedores</div></div>
+<div class="tile" style="background:#FBFBFB"><span style="display:inline-block;width:24px;height:24px;background:url(../assets/icons/billetes.svg) center/contain no-repeat;opacity:.45"></span><div class="t" style="color:#878C8F">Pago de CTS</div></div>
+<div class="tile"><span style="display:inline-block;width:24px;height:24px;background:url(../assets/icons/solicitud.svg) center/contain no-repeat;"></span><div class="t">Pago de planilla</div></div>
+
+<div class="empty">
+  <div style="width:64px;height:64px;border-radius:50%;background:#CDF2DC;display:flex;align-items:center;justify-content:center"><span style="display:inline-block;width:28px;height:28px;background:url(../assets/icons/foco.svg) center/contain no-repeat;"></span></div>
+  <div>
+    <h3>¡Afíliate a pagos masivos!</h3>
+    <p>Solicita la afiliación 100% digital para usar pagos masivos en tu empresa</p>
+    <button class="btn btn-primary" style="height:40px;padding:0 22px;font-size:14px">Afiliarme</button>
+  </div>
+</div>
+</body></html>

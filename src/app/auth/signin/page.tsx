@@ -2,22 +2,23 @@ import { SignInForm } from "@/components/auth/SignInForm";
 
 export default function SignInPage() {
   return (
-    <section style={{ maxWidth: 420, margin: "64px auto" }}>
-      <div className="eyebrow">auth · sign in</div>
+    <section style={{ maxWidth: 460, margin: "64px auto" }}>
+      <div className="eyebrow">Acceso</div>
       <h1
-        className="serif"
         style={{
-          fontSize: 48,
-          fontWeight: 400,
-          letterSpacing: "-0.02em",
-          margin: "0 0 18px",
+          fontFamily: "var(--display)",
+          fontSize: 32,
+          fontWeight: 500,
+          letterSpacing: "-0.6px",
+          color: "var(--ibk-blue)",
+          margin: "0 0 12px",
         }}
       >
-        Come on in.
+        Inicia sesión.
       </h1>
       <p className="small" style={{ marginBottom: 24 }}>
-        Plotpaper uses email OTP. Type your address, get a 6-digit code, and
-        you&rsquo;re in.
+        Plotpaper usa código por correo. Escribe tu email, recibe un código de
+        6 dígitos y entra.
       </p>
       <SignInForm />
     </section>

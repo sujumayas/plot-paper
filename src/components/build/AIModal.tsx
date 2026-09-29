@@ -15,20 +15,20 @@ type Props = {
 };
 
 const SUGGESTIONS = [
-  "Bubble matrix with nested categories",
-  "Step chart with milestone markers",
-  "Team performance radar vs benchmark",
-  "Ranked leaderboard for YTD sales",
-  "Quarterly launch gantt with dependencies",
+  "Matriz de burbujas con categorías anidadas",
+  "Gráfico escalonado con marcadores de hitos",
+  "Radar de desempeño por equipo vs benchmark",
+  "Tabla de posiciones de ventas YTD",
+  "Gantt trimestral de lanzamientos con dependencias",
 ];
 
 const STATUS_MESSAGES = [
-  "Parsing intent…",
-  "Inspecting reference…",
-  "Picking a base renderer…",
-  "Drafting the schema…",
-  "Sampling rows…",
-  "Finalizing shape…",
+  "Interpretando tu intención…",
+  "Revisando la referencia…",
+  "Eligiendo el renderizador base…",
+  "Diseñando el esquema de columnas…",
+  "Generando filas de muestra…",
+  "Afinando los detalles…",
 ];
 
 export function AIModal({
@@ -75,7 +75,7 @@ export function AIModal({
   const doGenerate = async () => {
     if (!prompt.trim()) return;
     if (!userId) {
-      toast("Sign in to generate");
+      toast("Inicia sesión para generar");
       return;
     }
     setThinking(true);
@@ -87,10 +87,10 @@ export function AIModal({
     const res = await generateVizType({ prompt, referenceImageUrl });
     setThinking(false);
     if (!res.ok) {
-      toast(`AI: ${res.error}`);
+      toast(`IA: ${res.error}`);
       return;
     }
-    toast(`Added "${res.viz.name}"`);
+    toast(`Agregado "${res.viz.name}"`);
     onGenerated(res.viz);
     onClose();
   };
@@ -110,17 +110,17 @@ export function AIModal({
       >
         <div className="modal-head">
           <div>
-            <span className="pill accent">AI · Beta</span>
-            <h2 style={{ marginTop: 10 }}>Describe the chart you want.</h2>
+            <span className="pill accent">IA · Beta</span>
+            <h2 style={{ marginTop: 10 }}>Describe el gráfico que quieres.</h2>
             <p>
-              Claude picks a base renderer, infers the column schema, and
-              drops in a sample row set for you.
+              Claude elige un renderizador base, infiere las columnas y deja
+              listas filas de muestra para empezar.
             </p>
           </div>
           <button
             className="close-x"
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Cerrar"
             disabled={thinking}
           >
             <IconClose />
@@ -130,10 +130,14 @@ export function AIModal({
           {thinking ? (
             <div className="thinking">
               <div
-                className="serif"
-                style={{ fontSize: 24, letterSpacing: "-0.02em" }}
+                style={{
+                  fontFamily: "var(--display)",
+                  fontSize: 22,
+                  letterSpacing: "-0.4px",
+                  color: "var(--ibk-blue)",
+                }}
               >
-                Synthesizing renderer…
+                Generando…
               </div>
               <div className="thinking-bar">
                 <span />
@@ -148,7 +152,7 @@ export function AIModal({
                   id="ai-prompt"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="e.g. Monthly churn heatmap split by plan tier"
+                  placeholder="ej: Heatmap mensual de churn por tipo de plan"
                 />
               </div>
 
@@ -165,7 +169,7 @@ export function AIModal({
               </div>
 
               <div className="field">
-                <label>Reference image (optional)</label>
+                <label>Imagen de referencia (opcional)</label>
                 <div
                   className={`ref-dropzone ${refPreview ? "has-file" : ""}`}
                   onClick={() => !refPreview && inputRef.current?.click()}
@@ -173,7 +177,7 @@ export function AIModal({
                   {refPreview ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={refPreview} alt="reference" />
+                      <img src={refPreview} alt="referencia" />
                       <button
                         type="button"
                         className="rm"
@@ -183,7 +187,7 @@ export function AIModal({
                           setRefPreview(null);
                         }}
                       >
-                        Remove
+                        Quitar
                       </button>
                     </>
                   ) : (
@@ -195,7 +199,7 @@ export function AIModal({
                         gap: 10,
                       }}
                     >
-                      <IconImage /> Drop a screenshot or click to browse
+                      <IconImage /> Arrastra un screenshot o haz clic para subirlo
                     </div>
                   )}
                 </div>
@@ -214,18 +218,18 @@ export function AIModal({
         </div>
         <div className="modal-foot">
           <span className="small mono">
-            Model: claude-opus-4-7
+            Modelo: claude-opus-4-7
           </span>
           <div style={{ display: "flex", gap: 8 }}>
             <Button onClick={onClose} disabled={thinking}>
-              Cancel
+              Cancelar
             </Button>
             <Button
-              variant="accent"
+              variant="primary"
               onClick={doGenerate}
               disabled={thinking || !prompt.trim()}
             >
-              <IconSparkle /> Generate
+              <IconSparkle /> Generar
             </Button>
           </div>
         </div>

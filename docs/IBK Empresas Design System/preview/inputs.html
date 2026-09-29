@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Inputs</title><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{background:#fff;padding:22px;display:flex;flex-direction:column;gap:14px;}
+.field{display:flex;flex-direction:column;gap:6px;max-width:340px;}
+label{font-family:Montserrat;font-weight:500;font-size:12px;color:#878C8F;}
+input{height:48px;border-radius:4px;border:1px solid #D9DADB;background:#fff;font-family:Montserrat;font-size:14px;padding:0 14px;color:#0F191E;outline:none;}
+input:focus{border-color:#05BE50;box-shadow:0 0 0 3px #CDF2DC;}
+.row{display:flex;gap:12px;flex-wrap:wrap;}
+.check{display:inline-flex;align-items:center;gap:8px;font-family:Montserrat;font-size:14px;color:#333}
+.cbox{width:18px;height:18px;border:1.5px solid #B7BABC;border-radius:3px;display:inline-flex;align-items:center;justify-content:center}
+.cbox.on{background:#05BE50;border-color:#05BE50;color:#fff;font-size:12px;}
+</style></head><body>
+<div class="row">
+  <div class="field"><label>RUC de la empresa</label><input value="20512345678"></div>
+  <div class="field"><label>Usuario</label><input placeholder="Ingresa tu usuario"></div>
+</div>
+<div class="row">
+  <div class="field"><label style="color:#EB0046">Contraseña</label><input value="••••••" style="border-color:#EB0046"><span style="font-family:Montserrat;font-size:11px;color:#EB0046">La contraseña es incorrecta</span></div>
+</div>
+<div class="row">
+  <span class="check"><span class="cbox on">✓</span>Recuérdame</span>
+  <span class="check"><span class="cbox"></span>Guardar usuario</span>
+</div>
+</body></html>

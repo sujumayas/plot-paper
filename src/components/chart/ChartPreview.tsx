@@ -11,7 +11,7 @@ type Props = {
 export function ChartPreview({
   viz,
   data,
-  accent = "oklch(64% 0.16 48)",
+  accent = "#05BE50",
   grid = true,
 }: Props) {
   const W = 400,

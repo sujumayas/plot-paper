@@ -48,9 +48,9 @@ export const renderHeatmap: RenderFn = (data, cols, opts) => {
                   x={padL + ci * cw + cw / 2}
                   y={padT + ri * ch + ch / 2 + 4}
                   textAnchor="middle"
-                  fontFamily="var(--mono)"
+                  fontFamily="var(--num)"
                   fontSize="10"
-                  fill={t > 0.55 ? "var(--paper)" : "var(--ink-2)"}
+                  fill={t > 0.55 ? "var(--bg-card)" : "var(--fg-2)"}
                 >
                   {fmt(v)}
                 </text>
@@ -65,9 +65,9 @@ export const renderHeatmap: RenderFn = (data, cols, opts) => {
           x={padL + ci * cw + cw / 2}
           y={padT - 10}
           textAnchor="middle"
-          fontFamily="var(--mono)"
+          fontFamily="var(--num)"
           fontSize="10"
-          fill="var(--ink-3)"
+          fill="var(--fg-4)"
           letterSpacing="1"
         >
           {String(c).slice(0, 10)}
@@ -79,9 +79,9 @@ export const renderHeatmap: RenderFn = (data, cols, opts) => {
           x={padL - 10}
           y={padT + ri * ch + ch / 2 + 4}
           textAnchor="end"
-          fontFamily="var(--sans)"
+          fontFamily="var(--body)"
           fontSize="11"
-          fill="var(--ink-2)"
+          fill="var(--fg-2)"
         >
           {String(r).slice(0, 14)}
         </text>

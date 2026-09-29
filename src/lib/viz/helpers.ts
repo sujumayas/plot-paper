@@ -1,12 +1,12 @@
 export const Palette = (accent: string): string[] => [
   accent,
-  "oklch(64% 0.16 240)",
-  "oklch(64% 0.16 150)",
-  "oklch(64% 0.16 340)",
-  "oklch(64% 0.16 80)",
-  "oklch(50% 0.12 280)",
-  "oklch(72% 0.14 25)",
-  "oklch(56% 0.14 190)",
+  "#0039A6",
+  "#64B4E6",
+  "#FFB406",
+  "#EB0046",
+  "#00863F",
+  "#2F4A9F",
+  "#878C8F",
 ];
 
 export const niceMax = (max: number): number => {

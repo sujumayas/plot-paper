@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Buttons</title><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{background:#fff;padding:22px;display:flex;flex-direction:column;gap:16px;}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.lbl{font-family:var(--font-num);font-size:10px;color:#878C8F;text-transform:uppercase;letter-spacing:.04em;min-width:80px;}
+</style></head><body>
+<div class="row"><div class="lbl">Primary</div>
+  <button class="btn btn-primary">Continuar</button>
+  <button class="btn btn-outline">Cancelar</button>
+  <button class="btn btn-disabled" disabled>Continuar</button>
+</div>
+<div class="row"><div class="lbl">Small</div>
+  <button class="btn btn-primary" style="height:36px;font-size:14px;padding:0 18px">Guardar</button>
+  <button class="btn btn-outline" style="height:36px;font-size:14px;padding:0 18px">Editar</button>
+</div>
+<div class="row"><div class="lbl">Squared</div>
+  <button class="btn btn-primary" style="height:64px;padding:0 56px;border-radius:12px;font-size:20px;font-family:'Geometria';font-weight:500;letter-spacing:-0.2px">Comenzar</button>
+  <button class="btn btn-outline" style="height:64px;padding:0 56px;border-radius:12px;font-size:20px;font-family:'Geometria';font-weight:500;letter-spacing:-0.2px">Volver</button>
+</div>
+<div class="row"><div class="lbl">Icon</div>
+  <button class="btn btn-primary" style="width:48px;padding:0"><span style="display:inline-block;width:20px;height:20px;background:url(../assets/icons/descarga.svg) center/contain no-repeat;filter:brightness(0) invert(1)"></span></button>
+  <button class="btn btn-outline" style="width:48px;padding:0"><span style="display:inline-block;width:20px;height:20px;background:url(../assets/icons/lapiz.svg) center/contain no-repeat;"></span></button>
+</div>
+</body></html>

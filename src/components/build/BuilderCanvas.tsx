@@ -19,13 +19,6 @@ type Props = {
   publishGated: boolean;
 };
 
-const EMPTY_ASCII = `┌──────────────────────────────────┐
-│                                  │
-│     No data yet. Pick a type,    │
-│     then open Data & export.     │
-│                                  │
-└──────────────────────────────────┘`;
-
 export function BuilderCanvas({
   viz,
   data,
@@ -45,26 +38,26 @@ export function BuilderCanvas({
             className="canvas-title-input"
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
-            placeholder="Untitled graph"
-            aria-label="Graph title"
+            placeholder="Gráfico sin título"
+            aria-label="Título del gráfico"
           />
           <span className="small mono">{viz.name}</span>
         </div>
         <div className="canvas-actions">
-          <Button onClick={onOpenData}>Data &amp; export</Button>
+          <Button onClick={onOpenData}>Datos y exportar</Button>
           <Button
             variant="primary"
             onClick={onPublish}
             disabled={publishGated || data.length === 0}
             title={
               publishGated
-                ? "Sign in to publish"
+                ? "Inicia sesión para publicar"
                 : data.length === 0
-                  ? "Load some data first"
+                  ? "Primero carga datos"
                   : undefined
             }
           >
-            <IconShare /> Publish
+            <IconShare /> Publicar
           </Button>
         </div>
       </header>
@@ -72,20 +65,21 @@ export function BuilderCanvas({
         {data.length === 0 ? (
           <div className="canvas-empty">
             <div className="box">
-              <pre className="ascii-box">{EMPTY_ASCII}</pre>
-              <h3>Drop a CSV or load a sample.</h3>
+              <h3>Arrastra un CSV o usa una muestra.</h3>
               <p>
-                Every viz has its own template. Grab yours from{" "}
-                <em>Data &amp; export</em> and you&rsquo;re off.
+                Cada visualización tiene su propia plantilla. Descárgala desde{" "}
+                <strong>Datos y exportar</strong> y empieza desde ahí.
               </p>
-              <Button onClick={onOpenData}>Open Data &amp; export…</Button>
+              <Button variant="primary" onClick={onOpenData}>
+                Abrir Datos y exportar…
+              </Button>
             </div>
           </div>
         ) : (
           <ChartView
             viz={viz}
             data={data}
-            title={title || "Untitled graph"}
+            title={title || "Gráfico sin título"}
             subtitle={`n = ${data.length} · ${viz.columns
               .map((c) => `${c.name}:${c.type}`)
               .join("  ·  ")}`}

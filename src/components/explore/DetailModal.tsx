@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChartView } from "@/components/chart/ChartView";
 import {
+  IconBookmark,
   IconClose,
-  IconDownload,
   IconFile,
   IconFork,
   IconHeart,
@@ -45,7 +45,6 @@ export function DetailModal({
   const [likes, setLikes] = useState(graph.likes);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Fire view increment once + get current session + current like state.
   useEffect(() => {
     const supa = getBrowserClient();
     void supa.rpc("increment_views", { graph_id: graph.id });
@@ -64,7 +63,6 @@ export function DetailModal({
     });
   }, [graph.id]);
 
-  // Close on Escape.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -83,7 +81,7 @@ export function DetailModal({
       graph_id: graph.id,
     });
     if (error) {
-      toast("Could not update like");
+      toast("No pudimos actualizar tu like");
       return;
     }
     const nowLiked = !!data;
@@ -101,7 +99,7 @@ export function DetailModal({
       source_id: graph.id,
     });
     if (error || !data) {
-      toast("Could not fork graph");
+      toast("No pudimos copiar el gráfico");
       return;
     }
     onClose();
@@ -124,13 +122,14 @@ export function DetailModal({
       .insert({ user_id: userId, viz_type_id: viz.id })
       .select();
     if (error && !error.message.includes("duplicate")) {
-      toast("Could not save type");
+      toast("No pudimos guardar el tipo");
       return;
     }
-    toast(`Saved "${viz.name}" to your types`);
+    toast(`Guardado "${viz.name}" en tus tipos`);
   };
 
   const fileBase = graph.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const author = graph.display_author ?? "anónimo";
 
   return (
     <div
@@ -152,7 +151,7 @@ export function DetailModal({
               viz={viz}
               data={graph.data}
               title={graph.title}
-              subtitle={`by ${graph.display_author ?? "anon"} · n = ${graph.data.length}`}
+              subtitle={`por ${author} · n = ${graph.data.length}`}
               opts={{ accent, grid, labels }}
               svgRef={svgRef}
             />
@@ -165,19 +164,19 @@ export function DetailModal({
                 alignItems: "start",
               }}
             >
-              <span className="pill">{viz.name}</span>
-              <button className="close-x" onClick={onClose} aria-label="Close">
+              <span className="pill accent">{viz.name}</span>
+              <button className="close-x" onClick={onClose} aria-label="Cerrar">
                 <IconClose />
               </button>
             </div>
             <h2 style={{ marginTop: 12 }}>{graph.title}</h2>
             <div className="by">
               <div className="avatar">
-                {(graph.display_author ?? "anon").slice(0, 2).toUpperCase()}
+                {author.slice(0, 2).toUpperCase()}
               </div>
-              {graph.display_author ?? "anon"}
+              {author}
               {graph.tags && graph.tags.length > 0 && (
-                <span style={{ color: "var(--ink-4)" }}>
+                <span style={{ color: "var(--fg-4)" }}>
                   · {graph.tags.join(" · ")}
                 </span>
               )}
@@ -186,35 +185,35 @@ export function DetailModal({
 
             <div className="meta-stats">
               <div className="meta-stat">
-                <div className="k">Views</div>
-                <div className="v">{graph.views.toLocaleString()}</div>
+                <div className="k">Vistas</div>
+                <div className="v">{graph.views.toLocaleString("es-PE")}</div>
               </div>
               <div className="meta-stat">
-                <div className="k">Likes</div>
-                <div className="v">{likes.toLocaleString()}</div>
+                <div className="k">Me gusta</div>
+                <div className="v">{likes.toLocaleString("es-PE")}</div>
               </div>
               <div className="meta-stat">
-                <div className="k">Forks</div>
-                <div className="v">{graph.remixes.toLocaleString()}</div>
+                <div className="k">Copias</div>
+                <div className="v">{graph.remixes.toLocaleString("es-PE")}</div>
               </div>
             </div>
 
             <div className="action-stack">
               <Button variant="primary" onClick={doFork}>
-                <IconFork /> Fork this graph
+                <IconFork /> Copiar este gráfico
               </Button>
               <Button onClick={doUseData}>
-                <IconSparkle /> Use data in new graph
+                <IconSparkle /> Usar datos en uno nuevo
               </Button>
               <Button onClick={doSaveType}>
-                <IconDownload /> Save this type
+                <IconBookmark /> Guardar este tipo
               </Button>
               <Button
                 variant={liked ? "accent" : "default"}
                 onClick={doLike}
                 aria-pressed={liked}
               >
-                <IconHeart /> {liked ? "Liked" : "Like"}
+                <IconHeart /> {liked ? "Te gusta" : "Me gusta"}
               </Button>
             </div>
 
@@ -222,21 +221,21 @@ export function DetailModal({
               <Button
                 size="sm"
                 onClick={() => svgRef.current && exportPNG(svgRef.current, `${fileBase}.png`)}
-                title="Export PNG"
+                title="Exportar PNG"
               >
                 <IconImage /> PNG
               </Button>
               <Button
                 size="sm"
                 onClick={() => svgRef.current && exportSVG(svgRef.current, `${fileBase}.svg`)}
-                title="Export SVG"
+                title="Exportar SVG"
               >
                 <IconFile /> SVG
               </Button>
               <Button
                 size="sm"
                 onClick={() => svgRef.current && exportPDF(svgRef.current, `${fileBase}.pdf`, graph.title)}
-                title="Export PDF"
+                title="Exportar PDF"
               >
                 <IconFile /> PDF
               </Button>
@@ -253,7 +252,7 @@ export function DetailModal({
                     exportedAt: new Date().toISOString(),
                   })
                 }
-                title="Export JSON"
+                title="Exportar JSON"
               >
                 <IconJson /> JSON
               </Button>

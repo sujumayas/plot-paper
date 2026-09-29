@@ -28,7 +28,7 @@ export const renderRadar: RenderFn = (data, cols, opts) => {
             key={ri}
             points={pts.map((p) => p.join(",")).join(" ")}
             fill="none"
-            stroke="var(--rule-soft)"
+            stroke="var(--line)"
           />
         );
       })}
@@ -41,7 +41,7 @@ export const renderRadar: RenderFn = (data, cols, opts) => {
             y1={cy}
             x2={cx + R * Math.cos(ang)}
             y2={cy + R * Math.sin(ang)}
-            stroke="var(--rule-soft)"
+            stroke="var(--line)"
           />
         );
       })}
@@ -80,9 +80,9 @@ export const renderRadar: RenderFn = (data, cols, opts) => {
             y={y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontFamily="var(--mono)"
+            fontFamily="var(--num)"
             fontSize="10"
-            fill="var(--ink-2)"
+            fill="var(--fg-2)"
           >
             {String(a).slice(0, 14)}
           </text>

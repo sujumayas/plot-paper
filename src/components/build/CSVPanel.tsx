@@ -24,29 +24,29 @@ export function CSVPanel({ viz, data, onData, toast }: Props) {
       const parsed = CSVUtil.parse(text);
       const coerced = CSVUtil.coerceToSchema(viz, parsed.data);
       onData(coerced);
-      toast(`Loaded ${coerced.length} rows from ${file.name}`);
+      toast(`Cargadas ${coerced.length} filas desde ${file.name}`);
     };
     reader.readAsText(file);
   };
 
   const downloadTemplate = () => {
     const csv = CSVUtil.templateFor(viz);
-    downloadText(csv, `${viz.id}-template.csv`, "text/csv");
-    toast(`Template downloaded: ${viz.id}-template.csv`);
+    downloadText(csv, `${viz.id}-plantilla.csv`, "text/csv");
+    toast(`Plantilla descargada: ${viz.id}-plantilla.csv`);
   };
 
   return (
     <>
       <div className="tmpl-row" style={{ marginBottom: 12 }}>
         <button type="button" className="btn sm" onClick={downloadTemplate}>
-          <IconDownload /> Template.csv
+          <IconDownload /> Plantilla.csv
         </button>
         <button
           type="button"
           className="btn sm"
           onClick={() => onData(viz.sample)}
         >
-          <IconSparkle /> Use sample
+          <IconSparkle /> Usar muestra
         </button>
       </div>
       <div
@@ -71,11 +71,11 @@ export function CSVPanel({ viz, data, onData, toast }: Props) {
           hidden
           onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
         />
-        <div className="drop-title">Drop CSV here</div>
-        <div className="drop-sub">or click to browse</div>
+        <div className="drop-title">Arrastra tu CSV aquí</div>
+        <div className="drop-sub">o haz clic para subirlo</div>
       </div>
       <div className="csv-status">
-        <span>Rows</span>
+        <span>Filas</span>
         <strong>{data.length}</strong>
       </div>
     </>

@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Nav · header</title><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{margin:0;background:#F4F5F7;}
+.header{height:82px;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.05);display:flex;align-items:center;padding:0 28px;gap:20px}
+.logo{height:26px}
+.search{flex:1;max-width:300px;height:40px;border-radius:4px;border:1px solid #D9DADB;background:#fff;display:flex;align-items:center;padding:0 12px;gap:8px;font-family:Montserrat;color:#878C8F;font-size:13px}
+.promo{background:#CDF2DC;border-radius:20px;padding:6px 10px;display:flex;gap:8px;align-items:center}
+.promo b{font-family:Montserrat;font-weight:700;color:#05BE50;font-size:12px}
+.promo .n{font-family:Inter;color:#0F191E;font-size:10px;display:block}
+.user{display:flex;align-items:center;gap:8px;margin-left:auto}
+.user .hola{text-align:right;font-family:Montserrat;font-size:12px;color:#333;line-height:1.2}
+.user .hola b{display:block;font-family:"Geometria";font-weight:500;font-size:14px;letter-spacing:-0.5px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#05BE50;display:flex;align-items:center;justify-content:center}
+.nav{height:45px;background:#fff;display:flex;padding:0 28px;gap:28px;border-top:1px solid #F0F0F0}
+.nav a{font-family:"Geometria";font-weight:500;font-size:14px;color:#0F191E;display:flex;align-items:center;position:relative;letter-spacing:-0.5px;text-decoration:none}
+.nav a.active{color:#64B4E6}
+.nav a.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#64B4E6;border-radius:2px}
+</style></head><body>
+<div class="header">
+  <span class="logo" style="display:inline-block;width:24px;height:24px;background:url(../assets/logo-interbank-color.svg) center/contain no-repeat;"></span>
+  <div class="search">🔍 Buscar</div>
+  <div class="promo"><span style="display:inline-block;width:16px;height:16px;background:url(../assets/icons/combos.svg) center/contain no-repeat;"></span><div><b>Usa tu TC especial</b><span class="n">Compra S/ 3.270 · Venta S/ 3.270</span></div></div>
+  <div class="user"><div class="hola">Hola,<b>María Fernanda</b></div><div class="avatar"><span style="display:inline-block;width:18px;height:18px;background:url(../assets/icons/cuenta.svg) center/contain no-repeat;filter:brightness(0) invert(1)"></span></div></div>
+</div>
+<div class="nav">
+  <a>Inicio</a><a>Consultas</a><a class="active">Pagos y Transferencias</a><a>Solicitudes</a><a>Autorizaciones</a>
+</div>
+</body></html>

@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Layout grid</title><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{margin:0;background:#fff;padding:18px;font-family:var(--font-num);font-size:10px;color:#878C8F}
+.frame{width:100%;aspect-ratio:1440/360;background:#F4F5F7;position:relative;border:1px solid #ECEDED;border-radius:4px;overflow:hidden}
+.h{position:absolute;left:0;right:0;top:0;height:18%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);display:flex;align-items:center;padding:0 7%}
+.n{position:absolute;left:0;right:0;top:18%;height:9%;background:#fff;border-top:1px solid #F0F0F0;display:flex;align-items:center;padding:0 7%;gap:16px}
+.b{position:absolute;left:7%;top:30%;right:7%;bottom:22%;display:grid;grid-template-columns:25% 1fr;gap:1%}
+.s{background:#fff;border:1px solid #ECEDED;border-radius:5px}
+.c{background:#fff;border-radius:5px;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.f{position:absolute;left:0;right:0;bottom:0;height:20%;background:#fff;display:flex;flex-direction:column;box-shadow:0 -2px 4px rgba(0,0,0,.05)}
+.f .green{height:22%;background:#00A94F;margin-top:auto}
+.label{position:absolute;top:2%;left:8%;}
+</style></head><body>
+<div class="frame">
+  <div class="h"><div style="height:40%;width:14%;background:#05BE50;border-radius:2px"></div></div>
+  <div class="n"><div style="height:30%;width:70px;background:#64B4E6;border-radius:2px"></div></div>
+  <div class="b"><div class="s"></div><div class="c"></div></div>
+  <div class="f"><div style="flex:1"></div><div class="green"></div></div>
+</div>
+<div style="margin-top:8px">1440 canvas · 96 gutter · header 82 · nav 45 · sidenav 248 · footer 108 (+18 green strip)</div>
+</body></html>

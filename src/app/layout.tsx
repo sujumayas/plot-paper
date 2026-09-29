@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { instrumentSerif, interTight, jetbrainsMono } from "@/lib/fonts";
-import { TopBar } from "@/components/TopBar";
+import { inter, montserrat } from "@/lib/fonts";
+import { FooterIBK } from "@/components/shell/FooterIBK";
+import { SideNav } from "@/components/shell/SideNav";
+import { TopBar } from "@/components/shell/TopBar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Plotpaper — a data visualization playground",
+  title: "Plotpaper · Visualiza tus datos",
   description:
-    "Pick a chart type, drop a CSV, publish. Explore graphs other people have made.",
+    "Elige un tipo de gráfico, arrastra tu CSV y publica en la galería. Explora gráficos creados por otros.",
 };
 
 export default function RootLayout({
@@ -16,20 +18,23 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
-      className={`${instrumentSerif.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+      lang="es"
+      className={`${montserrat.variable} ${inter.variable}`}
       style={
         {
-          ["--font-serif-var" as string]: instrumentSerif.style.fontFamily,
-          ["--font-sans-var" as string]: interTight.style.fontFamily,
-          ["--font-mono-var" as string]: jetbrainsMono.style.fontFamily,
+          ["--font-body-var" as string]: montserrat.style.fontFamily,
+          ["--font-num-var" as string]: inter.style.fontFamily,
         } as React.CSSProperties
       }
     >
       <body>
-        <div className="app-frame">
-          <TopBar />
-          <main>{children}</main>
+        <div className="app-shell">
+          <SideNav />
+          <div className="app-body">
+            <TopBar />
+            <main className="page-shell">{children}</main>
+            <FooterIBK />
+          </div>
         </div>
       </body>
     </html>

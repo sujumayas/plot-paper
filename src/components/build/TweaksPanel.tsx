@@ -16,26 +16,26 @@ export function TweaksPanel({ tweaks, onChange }: Props) {
     return (
       <button
         type="button"
-        className="btn tweaks-trigger"
+        className="btn primary tweaks-trigger"
         onClick={() => setOpen(true)}
-        aria-label="Open tweaks panel"
+        aria-label="Abrir panel de ajustes"
       >
-        Tweaks
+        Ajustes
       </button>
     );
   }
 
   return (
-    <div className="tweaks" role="dialog" aria-label="Tweaks">
+    <div className="tweaks" role="dialog" aria-label="Ajustes del gráfico">
       <div className="tweaks-head">
-        <span>Tweaks</span>
-        <button onClick={() => setOpen(false)} aria-label="Close tweaks">
+        <span>Ajustes</span>
+        <button onClick={() => setOpen(false)} aria-label="Cerrar ajustes">
           <IconClose />
         </button>
       </div>
       <div className="tweaks-body">
         <div className="tweak-row">
-          <label>Accent</label>
+          <label>Color de acento</label>
           <div className="swatches">
             {ACCENT_SWATCHES.map((s) => (
               <button
@@ -44,42 +44,42 @@ export function TweaksPanel({ tweaks, onChange }: Props) {
                 className={tweaks.accent === s.value ? "on" : ""}
                 style={{ background: s.value }}
                 onClick={() => onChange({ accent: s.value })}
-                aria-label={`Set accent to ${s.name}`}
+                aria-label={`Usar acento ${s.name}`}
               />
             ))}
           </div>
         </div>
         <div className="tweak-row">
-          <label>Gridlines</label>
+          <label>Cuadrícula</label>
           <div className="seg">
             <button
               className={tweaks.grid ? "on" : ""}
               onClick={() => onChange({ grid: true })}
             >
-              on
+              Sí
             </button>
             <button
               className={!tweaks.grid ? "on" : ""}
               onClick={() => onChange({ grid: false })}
             >
-              off
+              No
             </button>
           </div>
         </div>
         <div className="tweak-row">
-          <label>Value labels</label>
+          <label>Etiquetas de valor</label>
           <div className="seg">
             <button
               className={tweaks.labels ? "on" : ""}
               onClick={() => onChange({ labels: true })}
             >
-              on
+              Sí
             </button>
             <button
               className={!tweaks.labels ? "on" : ""}
               onClick={() => onChange({ labels: false })}
             >
-              off
+              No
             </button>
           </div>
         </div>

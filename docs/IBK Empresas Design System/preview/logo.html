@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Logo</title><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;background:#fff;padding:24px;display:flex;flex-direction:column;gap:14px;font-family:Montserrat,system-ui,sans-serif}
+.row{display:flex;gap:18px;align-items:center;padding:22px 26px;border-radius:8px}
+.r1{background:#fff;border:1px solid #ECEDED}
+.r2{background:#F4F5F7;border:1px solid #ECEDED}
+.r3{background:#0039A6}
+.r4{background:#05BE50}
+.mark{width:168px;height:28px;
+  -webkit-mask:url(../assets/logo-interbank-color.svg) left center/contain no-repeat;
+          mask:url(../assets/logo-interbank-color.svg) left center/contain no-repeat;}
+.mark.blue{background:#0039A6}
+.mark.white{background:#fff}
+.n{font-family:Inter,system-ui,sans-serif;font-size:10px;color:#878C8F;margin-left:auto;text-transform:uppercase;letter-spacing:.04em}
+.hex{font-family:Inter,system-ui,sans-serif;font-size:10px;color:#878C8F;margin-left:10px;letter-spacing:.04em}
+.r3 .n, .r4 .n{color:rgba(255,255,255,.8)}
+.r3 .hex, .r4 .hex{color:rgba(255,255,255,.8)}
+</style></head><body>
+<div class="row r1"><span class="mark blue"></span><div class="n">Primary on white <span class="hex">#0039A6</span></div></div>
+<div class="row r2"><span class="mark blue"></span><div class="n">On page bg #F4F5F7 <span class="hex">#0039A6</span></div></div>
+<div class="row r3"><span class="mark white"></span><div class="n">Inverted on brand blue <span class="hex">#FFFFFF</span></div></div>
+<div class="row r4"><span class="mark white"></span><div class="n">Inverted on brand green <span class="hex">#FFFFFF</span></div></div>
+</body></html>

@@ -51,7 +51,7 @@ export function ChartView({
       </div>
       {showChrome && (
         <div className="chart-footer">
-          <span>Source · Plotpaper</span>
+          <span>Fuente · Plotpaper</span>
           <span>
             n = {data.length} · {viz.name}
           </span>

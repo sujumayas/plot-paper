@@ -4,8 +4,8 @@ import type { RefObject } from "react";
 import { useRef } from "react";
 import { CSVPanel } from "./CSVPanel";
 import {
+  IconCheck,
   IconClose,
-  IconDownload,
   IconFile,
   IconImage,
   IconJson,
@@ -63,9 +63,9 @@ export function DataExportModal({
                 : undefined,
           data: Array.isArray(parsed.data) ? parsed.data : undefined,
         });
-        toast(`Imported JSON from ${file.name}`);
+        toast(`Importado JSON desde ${file.name}`);
       } catch {
-        toast("Could not parse JSON file");
+        toast("No pudimos leer el archivo JSON");
       }
     };
     reader.readAsText(file);
@@ -86,34 +86,34 @@ export function DataExportModal({
       >
         <div className="modal-head">
           <div>
-            <span className="pill">Data &amp; export</span>
-            <h2 style={{ marginTop: 10 }}>Bring data in, send graph out.</h2>
+            <span className="pill accent">Datos y exportar</span>
+            <h2 style={{ marginTop: 10 }}>Trae datos, llévate el gráfico.</h2>
             <p>
-              Download a CSV template that matches this viz, drop the filled
-              file back, and export your graph in any format.
+              Descarga la plantilla CSV de esta visualización, súbela con tus
+              datos y exporta el gráfico en el formato que prefieras.
             </p>
           </div>
-          <button className="close-x" onClick={onClose} aria-label="Close">
+          <button className="close-x" onClick={onClose} aria-label="Cerrar">
             <IconClose />
           </button>
         </div>
-        <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           <section>
             <div
-              className="mono small"
-              style={{ letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}
+              className="small"
+              style={{ fontWeight: 700, color: "var(--ibk-blue)", marginBottom: 8 }}
             >
-              1. Data
+              1. Datos
             </div>
             <CSVPanel viz={viz} data={data} onData={onData} toast={toast} />
           </section>
 
           <section>
             <div
-              className="mono small"
-              style={{ letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}
+              className="small"
+              style={{ fontWeight: 700, color: "var(--ibk-blue)", marginBottom: 8 }}
             >
-              2. Export image
+              2. Exportar imagen
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
               <Button
@@ -139,14 +139,14 @@ export function DataExportModal({
 
           <section>
             <div
-              className="mono small"
-              style={{ letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}
+              className="small"
+              style={{ fontWeight: 700, color: "var(--ibk-blue)", marginBottom: 8 }}
             >
-              3. Data portability (JSON)
+              3. Datos portables (JSON)
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
               <Button size="sm" onClick={() => jsonInputRef.current?.click()}>
-                <IconUpload /> Import JSON
+                <IconUpload /> Importar JSON
               </Button>
               <Button
                 size="sm"
@@ -160,7 +160,7 @@ export function DataExportModal({
                   })
                 }
               >
-                <IconJson /> Export JSON
+                <IconJson /> Exportar JSON
               </Button>
             </div>
             <input
@@ -179,7 +179,7 @@ export function DataExportModal({
             {viz.columns.map((c) => `${c.name}:${c.type}`).join("  ")}
           </span>
           <Button variant="primary" onClick={onClose}>
-            <IconDownload /> Done
+            <IconCheck /> Listo
           </Button>
         </div>
       </div>

@@ -47,10 +47,9 @@ export function SignInForm({ onSignedIn }: Props) {
     });
     setBusy(false);
     if (error || !data.user) {
-      setErr(error?.message ?? "Invalid code");
+      setErr(error?.message ?? "Código inválido");
       return;
     }
-    // First-login migration (best-effort).
     try {
       await migrateLocalState(data.user.id);
     } catch {
@@ -63,10 +62,10 @@ export function SignInForm({ onSignedIn }: Props) {
   if (phase === "done") {
     return (
       <div style={{ padding: "24px 0" }}>
-        <h3 className="serif" style={{ fontSize: 24, margin: "0 0 8px" }}>
-          Signed in.
+        <h3 style={{ fontFamily: "var(--display)", fontSize: 22, margin: "0 0 8px", color: "var(--ibk-blue)" }}>
+          ¡Listo!
         </h3>
-        <p className="small">You can close this and keep going.</p>
+        <p className="small">Ya puedes cerrar y seguir explorando.</p>
       </div>
     );
   }
@@ -74,11 +73,11 @@ export function SignInForm({ onSignedIn }: Props) {
   return phase === "email" ? (
     <form className="ai-form" onSubmit={sendOtp}>
       <div className="field">
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email">Correo</label>
         <input
           id="email"
-          type="text"
-          placeholder="you@example.com"
+          type="email"
+          placeholder="tu@correo.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -86,21 +85,22 @@ export function SignInForm({ onSignedIn }: Props) {
         />
       </div>
       {err && (
-        <div className="small" style={{ color: "var(--danger)" }}>
+        <div className="small" style={{ color: "var(--red)" }}>
           {err}
         </div>
       )}
       <Button type="submit" variant="primary" disabled={busy} block>
-        {busy ? "Sending…" : "Send code"}
+        {busy ? "Enviando…" : "Enviar código"}
       </Button>
       <p className="small">
-        We&rsquo;ll email a 6-digit code. Sign-up and sign-in use the same form.
+        Te enviaremos un código de 6 dígitos a tu correo. El registro y el inicio
+        de sesión usan el mismo formulario.
       </p>
     </form>
   ) : (
     <form className="ai-form" onSubmit={verifyOtp}>
       <div className="field">
-        <label htmlFor="code">Code sent to {email}</label>
+        <label htmlFor="code">Código enviado a {email}</label>
         <input
           id="code"
           type="text"
@@ -115,7 +115,7 @@ export function SignInForm({ onSignedIn }: Props) {
         />
       </div>
       {err && (
-        <div className="small" style={{ color: "var(--danger)" }}>
+        <div className="small" style={{ color: "var(--red)" }}>
           {err}
         </div>
       )}
@@ -128,10 +128,10 @@ export function SignInForm({ onSignedIn }: Props) {
             setErr(null);
           }}
         >
-          Back
+          Volver
         </Button>
         <Button type="submit" variant="primary" disabled={busy} block>
-          {busy ? "Verifying…" : "Verify & sign in"}
+          {busy ? "Verificando…" : "Verificar e iniciar sesión"}
         </Button>
       </div>
     </form>
